@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Сборник карточек — проект</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: #f5f7fa;
+      color: #1a1a1a;
+      padding: 24px;
+      max-width: 1200px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 32px;
+      color: #2c3e50;
+    }
+    .section {
+      margin-bottom: 40px;
+    }
+    .section-title {
+      margin-bottom: 16px;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #333;
+    }
+
+    /* Карусель (горизонтальный скролл) */
+    .carousel-container {
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      scrollbar-width: thin;
+    }
+    .card {
+      min-width: 260px;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      flex: 0 0 auto;
+      transition: transform 0.2s, border 0.2s;
+    }
+    .card.selected {
+      transform: scale(1.03);
+      border: 2px solid #4299e1;
+    }
+    .card h3 {
+      margin: 0 0 10px 0;
+      font-size: 1.1rem;
+      color: #2d3748;
+    }
+    .card p {
+      margin: 0 0 16px 0;
+      color: #555;
+      font-size: 0.95rem;
+      line-height: 1.45;
+    }
+
+    button.mark-btn {
+      width: 100%;
+      padding: 12px;
+      background: #e2e8f0;
+      border: none;
+      border-radius: 8px;
+      color: #2d3748;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    button.mark-btn:hover {
+      background: #cbd5e1;
+    }
+    button.mark-btn.selected {
+      background: #4299e1;
+      color: white;
+    }
+
+    /* Область результата */
+    #result-area {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      margin-top: 40px;
+    }
+    #selected-list {
+      list-style: none;
+      padding: 0;
+      margin: 20px 0;
+    }
+    #selected-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #edf2f7;
+    }
+    .remove-btn {
+      color: #ef4444;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: underline;
+      font-size: 0.9rem;
+    }
+
+    .result-actions {
+      margin-top: 28px;
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    button.action-btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .btn-download {
+      background: #3182ce;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>Интерактивный сборник карточек</h1>
+
+  <!-- Секция 1: Части речи -->
+  <div class="section">
+    <div class="section-title">Части речи</div>
+    <div class="carousel-container">
+      <div class="card"><h3>Глагол</h3><p>Действие или состояние. Отвечает на вопросы «что делать?», «что сделать?».</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Существительное</h3><p>Называет предмет или явление. Отвечает на вопросы «кто?», «что?».</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Прилагательное</h3><p>Признак предмета. Отвечает на вопрос «какой?».</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Наречие</h3><p>Признак действия или другого признака. Отвечает на вопрос «как?».</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+    </div>
+  </div>
+
+  <!-- Секция 2: Члены предложения -->
+  <div class="section">
+    <div class="section-title">Члены предложения</div>
+    <div class="carousel-container">
+      <div class="card"><h3>Подлежащее</h3><p>Главный член, обозначает предмет речи. Чаще всего — существительное или местоимение.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Сказуемое</h3><p>Показывает действие, состояние или признак подлежащего.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Дополнение</h3><p>Отвечает на вопросы косвенных падежей (кого? чего? кому? чему?).</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Определение</h3><p>Уточняет признак предмета, отвечает на вопрос «какой?», «чей?».</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Обстоятельство</h3><p>Показывает условия действия: где? когда? как? почему?</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Приложение</h3><p>Разновидность определения, выраженная существительным (например, «девочка-отличница»).</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Тире между подлежащим и сказуемым</h3><p>Правило пунктуации, когда оба главных члена — существительные в именительном падеже.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+    </div>
+  </div>
+
+  <!-- Секция 3: Типы предложений -->
+  <div class="section">
+    <div class="section-title">Типы предложений</div>
+    <div class="carousel-container">
+      <div class="card"><h3>Повествовательное</h3><p>Сообщает о факте. В конце — точка. Пример: «Сегодня идёт дождь».</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Вопросительное</h3><p>Содержит вопрос. В конце — вопросительный знак.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Побудительное</h3><p>Призывает к действию: просьба, приказ, совет.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Восклицательное</h3><p>Передаёт сильные эмоции. В конце — восклицательный знак.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Невосклицательное</h3><p>Произносится спокойно, без особой эмоциональной окраски.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+    </div>
+  </div>
+
+  <!-- Секция 4: Стили речи -->
+  <div class="section">
+    <div class="section-title">Стили речи</div>
+    <div class="carousel-container">
+      <div class="card"><h3>Научный</h3><p>Точность, термины, логичность. Учебники, статьи.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Официально-деловой</h3><p>Стандартизированные формулировки, точность, отсутствие эмоций. Документы, законы.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Публицистический</h3><p>Воздействие на читателя, актуальность, оценочность. Газеты, выступления.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Художественный</h3><p>Образность, эмоциональность, выразительные средства. Литература.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Разговорный</h3><p>Непринуждённость, живая интонация, простые конструкции. Повседневное общение.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Смешение стилей</h3><p>Элементы разных стилей в одном тексте (реклама, блоги).</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+    </div>
+  </div>
+
+  <!-- Секция 5: Тропы и фигуры речи -->
+  <div class="section">
+    <div class="section-title">Тропы и фигуры речи</div>
+    <div class="carousel-container">
+      <div class="card"><h3>Метафора</h3><p>Перенос значения по сходству («море огней»).</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Эпитет</h3><p>Художественное определение («бархатная ночь»).</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Сравнение</h3><p>Прямое сопоставление («быстр, как молния»).</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Олицетворение</h3><p>Наделение неживого свойствами живого («ветер шепчет»).</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Гипербола</h3><p>Преувеличение («я сто раз тебе говорил»).</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Литота</h3><p>Намеренное преуменьшение («мальчик с пальчик»).</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Антитеза</h3><p>Противопоставление понятий («чёрное и белое»).</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Анафора</h3><p>Повтор слов в начале строк/предложений.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+    </div>
+  </div>
+
+  <!-- Секция 6: Орфограммы -->
+  <div class="section">
+    <div class="section-title">Орфограммы</div>
+    <div class="carousel-container">
+      <div class="card"><h3>Безударные гласные</h3><p>Проверяются подбором однокоренного слова с ударением.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Парные согласные</h3><p>Проверка изменением формы слова.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Непроизносимые согласные</h3><p>Написание проверяется подбором проверочного слова.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Правописание приставок</h3><p>Зависит от значения или последующей буквы.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Мягкий знак после шипящих</h3><p>Правила написания в разных частях речи.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Разделительные Ъ и Ь</h3><p>Употребление перед гласными.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>НЕ с разными частями речи</h3><p>Слитное и раздельное написание.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Н и НН в суффиксах</h3><p>Правописание в прилагательных и причастиях.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+    </div>
+  </div>
+
+  <!-- Секция 7: Пунктуация -->
+  <div class="section">
+    <div class="section-title">Пунктуация</div>
+    <div class="carousel-container">
+      <div class="card"><h3>Запятая при однородных членах</h3><p>Ставится между однородными членами без союзов или с повторяющимися союзами.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Знаки в ССП</h3><p>Чаще всего запятая перед «и», «а», «но».</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Знаки в СПП</h3><p>Запятые отделяют придаточные части от главной.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Двоеточие</h3><p>После обобщающего слова, при прямой речи, в БСП.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Тире</h3><p>В разных случаях: между подлежащим и сказуемым, при пропуске члена предложения и т.д.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Кавычки</h3><p>Для прямой речи, цитат, названий.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+      <div class="card"><h3>Скобки</h3><p>Пояснения, уточнения, вставные конструкции.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
+    </div>
+  </div>
+
+  <!-- Область результата -->
+  <div id="result-area">
+    <h2>Выбранные карточки</h2>
+    <ul id="selected-list"></ul>
+    <div class="result-actions">
+      <button class="action-btn btn-download" onclick="downloadList()">Скачать список карточек</button>
+      <button class="action-btn" onclick="clearList()">Очистить список</button>
+    </div>
+  </div>
+
+  <script>
+    const selectedList = [];
+    const listElement = document.getElementById('selected-list');
+
+    function toggleCard(btn) {
+      const card = btn.closest('.card');
+      const title = card.querySelector('h3').innerText;
+      const text = card.querySelector('p').innerText;
+
+      if (card.classList.contains('selected')) {
+        // Убираем выбор
+        card.classList.remove('selected');
+        btn.classList.remove('selected');
+        const index = selectedList.findIndex(item => item.title === title);
+        if (index > -1) selectedList.splice(index, 1);
+      } else {
+        // Добавляем выбор
+        card.classList.add('selected');
+        btn.classList.add('selected');
+        selectedList.push({ title, text });
+      }
+      renderList();
+    }
+
+    function renderList() {
+      listElement.innerHTML = '';
+      selectedList.forEach((item, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <span><strong>${item.title}</strong>: ${item.text}</span>
+          <button class="remove-btn" onclick="removeItem(${index})">Убрать</button>
+        `;
+        listElement.appendChild(li);
+      });
+    }
+
+    function removeItem(index) {
+      selectedList.splice(index, 1);
+      renderList();
+      // Сбрасываем визуал карточек — проходим по всем кнопкам и обновляем статус
+      document.querySelectorAll('.mark-btn').forEach(btn => {
+        const card = btn.closest('.card');
+        const title = card.querySelector('h3').innerText;
+        const isSelected = selectedList.some(item => item.title === title);
+        card.classList.toggle('selected', isSelected);
+        btn.classList.toggle('selected', isSelected);
+      });
+    }
+
+    function clearList() {
+      selectedList.length = 0;
+      renderList();
+      document.querySelectorAll('.card').forEach(card => card.classList.remove('selected'));
+      document.querySelectorAll('.mark-btn').forEach(btn => btn.classList.remove('selected'));
+    }
+
+    function downloadList() {
+      if (selectedList.length === 0) {
+        alert('Сначала отметьте карточки!');
+        return;
+      }
+      const content = selectedList.map(item => `${item.title}: ${item.text}`).join('\n\n');
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'selected-cards.txt';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
+
