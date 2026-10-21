@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Сборник карточек — проект</title>
+  <title>Проект: Карточки по русскому языку</title>
   <style>
     body {
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
@@ -130,100 +130,8 @@
 </head>
 <body>
   <h1>Интерактивный сборник карточек</h1>
-
-  <!-- Секция 1: Части речи -->
-  <div class="section">
-    <div class="section-title">Части речи</div>
-    <div class="carousel-container">
-      <div class="card"><h3>Глагол</h3><p>Действие или состояние. Отвечает на вопросы «что делать?», «что сделать?».</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Существительное</h3><p>Называет предмет или явление. Отвечает на вопросы «кто?», «что?».</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Прилагательное</h3><p>Признак предмета. Отвечает на вопрос «какой?».</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Наречие</h3><p>Признак действия или другого признака. Отвечает на вопрос «как?».</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-    </div>
-  </div>
-
-  <!-- Секция 2: Члены предложения -->
-  <div class="section">
-    <div class="section-title">Члены предложения</div>
-    <div class="carousel-container">
-      <div class="card"><h3>Подлежащее</h3><p>Главный член, обозначает предмет речи. Чаще всего — существительное или местоимение.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Сказуемое</h3><p>Показывает действие, состояние или признак подлежащего.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Дополнение</h3><p>Отвечает на вопросы косвенных падежей (кого? чего? кому? чему?).</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Определение</h3><p>Уточняет признак предмета, отвечает на вопрос «какой?», «чей?».</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Обстоятельство</h3><p>Показывает условия действия: где? когда? как? почему?</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Приложение</h3><p>Разновидность определения, выраженная существительным (например, «девочка-отличница»).</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Тире между подлежащим и сказуемым</h3><p>Правило пунктуации, когда оба главных члена — существительные в именительном падеже.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-    </div>
-  </div>
-
-  <!-- Секция 3: Типы предложений -->
-  <div class="section">
-    <div class="section-title">Типы предложений</div>
-    <div class="carousel-container">
-      <div class="card"><h3>Повествовательное</h3><p>Сообщает о факте. В конце — точка. Пример: «Сегодня идёт дождь».</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Вопросительное</h3><p>Содержит вопрос. В конце — вопросительный знак.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Побудительное</h3><p>Призывает к действию: просьба, приказ, совет.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Восклицательное</h3><p>Передаёт сильные эмоции. В конце — восклицательный знак.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Невосклицательное</h3><p>Произносится спокойно, без особой эмоциональной окраски.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-    </div>
-  </div>
-
-  <!-- Секция 4: Стили речи -->
-  <div class="section">
-    <div class="section-title">Стили речи</div>
-    <div class="carousel-container">
-      <div class="card"><h3>Научный</h3><p>Точность, термины, логичность. Учебники, статьи.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Официально-деловой</h3><p>Стандартизированные формулировки, точность, отсутствие эмоций. Документы, законы.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Публицистический</h3><p>Воздействие на читателя, актуальность, оценочность. Газеты, выступления.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Художественный</h3><p>Образность, эмоциональность, выразительные средства. Литература.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Разговорный</h3><p>Непринуждённость, живая интонация, простые конструкции. Повседневное общение.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Смешение стилей</h3><p>Элементы разных стилей в одном тексте (реклама, блоги).</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-    </div>
-  </div>
-
-  <!-- Секция 5: Тропы и фигуры речи -->
-  <div class="section">
-    <div class="section-title">Тропы и фигуры речи</div>
-    <div class="carousel-container">
-      <div class="card"><h3>Метафора</h3><p>Перенос значения по сходству («море огней»).</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Эпитет</h3><p>Художественное определение («бархатная ночь»).</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Сравнение</h3><p>Прямое сопоставление («быстр, как молния»).</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Олицетворение</h3><p>Наделение неживого свойствами живого («ветер шепчет»).</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Гипербола</h3><p>Преувеличение («я сто раз тебе говорил»).</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Литота</h3><p>Намеренное преуменьшение («мальчик с пальчик»).</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Антитеза</h3><p>Противопоставление понятий («чёрное и белое»).</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Анафора</h3><p>Повтор слов в начале строк/предложений.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-    </div>
-  </div>
-
-  <!-- Секция 6: Орфограммы -->
-  <div class="section">
-    <div class="section-title">Орфограммы</div>
-    <div class="carousel-container">
-      <div class="card"><h3>Безударные гласные</h3><p>Проверяются подбором однокоренного слова с ударением.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Парные согласные</h3><p>Проверка изменением формы слова.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Непроизносимые согласные</h3><p>Написание проверяется подбором проверочного слова.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Правописание приставок</h3><p>Зависит от значения или последующей буквы.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Мягкий знак после шипящих</h3><p>Правила написания в разных частях речи.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Разделительные Ъ и Ь</h3><p>Употребление перед гласными.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>НЕ с разными частями речи</h3><p>Слитное и раздельное написание.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Н и НН в суффиксах</h3><p>Правописание в прилагательных и причастиях.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-    </div>
-  </div>
-
-  <!-- Секция 7: Пунктуация -->
-  <div class="section">
-    <div class="section-title">Пунктуация</div>
-    <div class="carousel-container">
-      <div class="card"><h3>Запятая при однородных членах</h3><p>Ставится между однородными членами без союзов или с повторяющимися союзами.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Знаки в ССП</h3><p>Чаще всего запятая перед «и», «а», «но».</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Знаки в СПП</h3><p>Запятые отделяют придаточные части от главной.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Двоеточие</h3><p>После обобщающего слова, при прямой речи, в БСП.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Тире</h3><p>В разных случаях: между подлежащим и сказуемым, при пропуске члена предложения и т.д.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Кавычки</h3><p>Для прямой речи, цитат, названий.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-      <div class="card"><h3>Скобки</h3><p>Пояснения, уточнения, вставные конструкции.</p><button class="mark-btn" onclick="toggleCard(this)">Отметить</button></div>
-    </div>
-  </div>
+  <!-- Сюда будут автоматически добавлены секции -->
+  <div id="cards-container"></div>
 
   <!-- Область результата -->
   <div id="result-area">
@@ -236,8 +144,102 @@
   </div>
 
   <script>
+    // ==========================================
+    // ВОТ ЗДЕСЬ МЕНЯЙ СОДЕРЖИМОЕ — ЭТО ПРОСТО СПИСОК
+    // ==========================================
+    const cardsData = [
+      { section: 'Части речи', title: 'Глагол', text: 'Действие или состояние. Отвечает на вопросы «что делать?», «что сделать?».' },
+      { section: 'Части речи', title: 'Существительное', text: 'Называет предмет или явление. Отвечает на вопросы «кто?», «что?».' },
+      { section: 'Части речи', title: 'Прилагательное', text: 'Признак предмета. Отвечает на вопрос «какой?».' },
+      { section: 'Части речи', title: 'Наречие', text: 'Признак действия или другого признака. Отвечает на вопрос «как?».' },
+
+      { section: 'Члены предложения', title: 'Подлежащее', text: 'Главный член, обозначает предмет речи. Чаще всего — существительное или местоимение.' },
+      { section: 'Члены предложения', title: 'Сказуемое', text: 'Показывает действие, состояние или признак подлежащего.' },
+      { section: 'Члены предложения', title: 'Дополнение', text: 'Отвечает на вопросы косвенных падежей (кого? чего? кому? чему?).' },
+      { section: 'Члены предложения', title: 'Определение', text: 'Уточняет признак предмета, отвечает на вопрос «какой?», «чей?».' },
+      { section: 'Члены предложения', title: 'Обстоятельство', text: 'Показывает условия действия: где? когда? как? почему?' },
+      { section: 'Члены предложения', title: 'Приложение', text: 'Разновидность определения, выраженная существительным (например, «девочка-отличница»).' },
+      { section: 'Члены предложения', title: 'Тире между подлежащим и сказуемым', text: 'Правило пунктуации, когда оба главных члена — существительные в именительном падеже.' },
+
+      { section: 'Типы предложений', title: 'Повествовательное', text: 'Сообщает о факте. В конце — точка. Пример: «Сегодня идёт дождь».' },
+      { section: 'Типы предложений', title: 'Вопросительное', text: 'Содержит вопрос. В конце — вопросительный знак.' },
+      { section: 'Типы предложений', title: 'Побудительное', text: 'Призывает к действию: просьба, приказ, совет.' },
+      { section: 'Типы предложений', title: 'Восклицательное', text: 'Передаёт сильные эмоции. В конце — восклицательный знак.' },
+      { section: 'Типы предложений', title: 'Невосклицательное', text: 'Произносится спокойно, без особой эмоциональной окраски.' },
+
+      { section: 'Стили речи', title: 'Научный', text: 'Точность, термины, логичность. Учебники, статьи.' },
+      { section: 'Стили речи', title: 'Официально-деловой', text: 'Стандартизированные формулировки, точность, отсутствие эмоций. Документы, законы.' },
+      { section: 'Стили речи', title: 'Публицистический', text: 'Воздействие на читателя, актуальность, оценочность. Газеты, выступления.' },
+      { section: 'Стили речи', title: 'Художественный', text: 'Образность, эмоциональность, выразительные средства. Литература.' },
+      { section: 'Стили речи', title: 'Разговорный', text: 'Непринуждённость, живая интонация, простые конструкции. Повседневное общение.' },
+      { section: 'Стили речи', title: 'Смешение стилей', text: 'Элементы разных стилей в одном тексте (реклама, блоги).' },
+
+      { section: 'Тропы и фигуры речи', title: 'Метафора', text: 'Перенос значения по сходству («море огней»).' },
+      { section: 'Тропы и фигуры речи', title: 'Эпитет', text: 'Художественное определение («бархатная ночь»).' },
+      { section: 'Тропы и фигуры речи', title: 'Сравнение', text: 'Прямое сопоставление («быстр, как молния»).' },
+      { section: 'Тропы и фигуры речи', title: 'Олицетворение', text: 'Наделение неживого свойствами живого («ветер шепчет»).' },
+      { section: 'Тропы и фигуры речи', title: 'Гипербола', text: 'Преувеличение («я сто раз тебе говорил»).' },
+      { section: 'Тропы и фигуры речи', title: 'Литота', text: 'Намеренное преуменьшение («мальчик с пальчик»).' },
+      { section: 'Тропы и фигуры речи', title: 'Антитеза', text: 'Противопоставление понятий («чёрное и белое»).' },
+      { section: 'Тропы и фигуры речи', title: 'Анафора', text: 'Повтор слов в начале строк/предложений.' },
+
+      { section: 'Орфограммы', title: 'Безударные гласные', text: 'Проверяются подбором однокоренного слова с ударением.' },
+      { section: 'Орфограммы', title: 'Парные согласные', text: 'Проверка изменением формы слова.' },
+      { section: 'Орфограммы', title: 'Непроизносимые согласные', text: 'Написание проверяется подбором проверочного слова.' },
+      { section: 'Орфограммы', title: 'Правописание приставок', text: 'Зависит от значения или последующей буквы.' },
+      { section: 'Орфограммы', title: 'Мягкий знак после шипящих', text: 'Правила написания в разных частях речи.' },
+      { section: 'Орфограммы', title: 'Разделительные Ъ и Ь', text: 'Употребление перед гласными.' },
+      { section: 'Орфограммы', title: 'НЕ с разными частями речи', text: 'Слитное и раздельное написание.' },
+      { section: 'Орфограммы', title: 'Н и НН в суффиксах', text: 'Правописание в прилагательных и причастиях.' },
+
+      { section: 'Пунктуация', title: 'Запятая при однородных членах', text: 'Ставится между однородными членами без союзов или с повторяющимися союзами.' },
+      { section: 'Пунктуация', title: 'Знаки в ССП', text: 'Чаще всего запятая перед «и», «а», «но».' },
+      { section: 'Пунктуация', title: 'Знаки в СПП', text: 'Запятые отделяют придаточные части от главной.' },
+      { section: 'Пунктуация', title: 'Двоеточие', text: 'После обобщающего слова, при прямой речи, в БСП.' },
+      { section: 'Пунктуация', title: 'Тире', text: 'В разных случаях: между подлежащим и сказуемым, при пропуске члена предложения и т.д.' },
+      { section: 'Пунктуация', title: 'Кавычки', text: 'Для прямой речи, цитат, названий.' },
+      { section: 'Пунктуация', title: 'Скобки', text: 'Пояснения, уточнения, вставные конструкции.' }
+    ];
+    // ==========================================
+
     const selectedList = [];
     const listElement = document.getElementById('selected-list');
+    const container = document.getElementById('cards-container');
+
+    // Группируем карточки по секциям
+    const sections = {};
+    cardsData.forEach(card => {
+      if (!sections[card.section]) sections[card.section] = [];
+      sections[card.section].push(card);
+    });
+
+    // Рисуем все секции
+    Object.keys(sections).forEach(sectionName => {
+      const sectionDiv = document.createElement('div');
+      sectionDiv.className = 'section';
+      
+      const titleDiv = document.createElement('div');
+      titleDiv.className = 'section-title';
+      titleDiv.textContent = sectionName;
+
+      const carousel = document.createElement('div');
+      carousel.className = 'carousel-container';
+
+      sections[sectionName].forEach(cardData => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <h3>${cardData.title}</h3>
+          <p>${cardData.text}</p>
+          <button class="mark-btn" onclick="toggleCard(this)">Отметить</button>
+        `;
+        carousel.appendChild(card);
+      });
+
+      sectionDiv.appendChild(titleDiv);
+      sectionDiv.appendChild(carousel);
+      container.appendChild(sectionDiv);
+    });
 
     function toggleCard(btn) {
       const card = btn.closest('.card');
@@ -245,13 +247,11 @@
       const text = card.querySelector('p').innerText;
 
       if (card.classList.contains('selected')) {
-        // Убираем выбор
         card.classList.remove('selected');
         btn.classList.remove('selected');
         const index = selectedList.findIndex(item => item.title === title);
         if (index > -1) selectedList.splice(index, 1);
       } else {
-        // Добавляем выбор
         card.classList.add('selected');
         btn.classList.add('selected');
         selectedList.push({ title, text });
@@ -274,7 +274,6 @@
     function removeItem(index) {
       selectedList.splice(index, 1);
       renderList();
-      // Сбрасываем визуал карточек — проходим по всем кнопкам и обновляем статус
       document.querySelectorAll('.mark-btn').forEach(btn => {
         const card = btn.closest('.card');
         const title = card.querySelector('h3').innerText;
@@ -308,4 +307,3 @@
   </script>
 </body>
 </html>
-
