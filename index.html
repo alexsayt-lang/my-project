@@ -108,34 +108,96 @@ body {
 }
 
 /* Карусели и карточки */
+/* Найди свой родительский класс (например .section) и поставь ему это */
 .section {
-  margin-bottom: 56px;
+  width: 100%;
+  max-width: 100%;          /* Никакого ограничения в пикселях! */
+  padding: 0 20px;          /* Только отступы по краям экрана */
+  box-sizing: border-box;
 }
+
 .section-title {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 600;
   color: var(--primary);
-  margin-bottom: 18px;
+  margin: 48px 0 20px 0;
+  padding-left: 16px; /* отступ слева, чтобы не прилипал к границе */
+  border-left: 5px solid var(--accent); /* акцентная линия слева */
+}
+/* Обёртка карусели — почти на весь экран */
+.single-carousel-block {
+  margin-bottom: 40px;
+}
+
+.full-screen-carousel {
+  position: relative;
+  width: 100%;
+  height: 85vh;
+  overflow: hidden;
   display: flex;
   align-items: center;
+  padding: 0 20px;
 }
-.carousel-container {
+
+.carousel-track {
   display: flex;
-  gap: 18px;
-  overflow-x: auto;
-  padding-bottom: 16px;
-  scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 #f1f5f9;
+  gap: 20px;
+  width: max-content;
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
 }
+
 .card {
-  min-width: 290px;
-  background: var(--card-bg);
-  padding: 26px;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  min-width: 90vw;
+  height: 80vh;
   flex: 0 0 auto;
-  transition: transform 0.25s, box-shadow 0.25s;
+  box-sizing: border-box;
+  padding: 40px;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+
+  /* Неактивные карточки — почти невидимые */
+  transform: scale(0.15);
+  opacity: 0.1;
+  pointer-events: none;
+  transition: transform 0.5s, opacity 0.5s;
 }
+
+.card.active {
+  transform: scale(1);
+  opacity: 1;
+  pointer-events: all;
+  z-index: 10;
+  position: relative;
+}
+
+/* Кнопки */
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.9);
+  border: none;
+  padding: 16px 24px;
+  cursor: pointer;
+  font-size: 28px;
+  z-index: 20;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  color: #333;
+}
+.prev { left: 20px; }
+.next { right: 20px; }
+
+@media (max-width: 768px) {
+  .card { min-width: 95vw; height: 80vh; padding: 20px; }
+  .card.active { transform: scale(0.95); }
+}
+
+
+
+
+
 .card.selected {
   transform: scale(1.05);
   box-shadow: 0 14px 36px rgba(52, 152, 219, 0.3);
@@ -215,6 +277,31 @@ button.action-btn {
   background: var(--accent);
   color: white;
 }
+.card.spacer {
+  width: 120px;            /* Ширина «пустого места» */
+  min-width: 120px;
+  background: transparent; /* Полностью прозрачный фон */
+  box-shadow: none;         /* Без тени */
+  opacity: 0;               /* Совсем невидимы */
+  pointer-events: none;     /* По ним нельзя кликнуть */
+}
+/* Соседние карточки — чуть видны по бокам от центральной */
+.card.near {
+  transform: scale(0.8);
+  opacity: 0.35;
+  z-index: 5;
+}
+
+/* Чтобы соседние карточки вообще могли «заглянуть» на экран,
+   карточка не должна занимать 90vw — поставь 72vw */
+.card {
+  min-width: 72vw;
+  width: 72vw;
+}
+@media (max-width: 768px) {
+  .card { min-width: 90vw; width: 90vw; }
+}
+
   </style>
 </head>
 <body>
@@ -246,218 +333,319 @@ button.action-btn {
     </div>
   </div>
 </div>
-
-<div id="cards-container"></div>
-
-<!-- Область результата -->
-<div id="result-area">
-  <h2>Выбранные методические приёмы</h2>
-  <ul id="selected-list"></ul>
-  <div class="result-actions">
-    <button class="action-btn btn-download" onclick="downloadList()">Скачать список приёмов</button>
-    <button class="action-btn" onclick="clearList()">Очистить список</button>
+<!-- Родитель для всех 9 каруселей -->
+<div id="all-carousels-wrapper">
+  <div class="single-carousel-block">
+    <div id="carousel-1" class="full-screen-carousel"></div>
+  </div>
+  <div class="single-carousel-block">
+    <div id="carousel-2" class="full-screen-carousel"></div>
+  </div>
+  <div class="single-carousel-block">
+    <div id="carousel-3" class="full-screen-carousel"></div>
+  </div>
+  <div class="single-carousel-block">
+    <div id="carousel-4" class="full-screen-carousel"></div>
+  </div>
+  <div class="single-carousel-block">
+    <div id="carousel-5" class="full-screen-carousel"></div>
+  </div>
+  <div class="single-carousel-block">
+    <div id="carousel-6" class="full-screen-carousel"></div>
+  </div>
+  <div class="single-carousel-block">
+    <div id="carousel-7" class="full-screen-carousel"></div>
+  </div>
+  <div class="single-carousel-block">
+    <div id="carousel-8" class="full-screen-carousel"></div>
+  </div>
+  <div class="single-carousel-block">
+    <div id="carousel-9" class="full-screen-carousel"></div>
   </div>
 </div>
-</h1>
-  <!-- Сюда будут автоматически добавлены секции -->
-  <div id="cards-container"></div>
 
-  <!-- Область результата -->
-  <div id="result-area">
-    <h2>Выбранные карточки</h2>
-    <ul id="selected-list"></ul>
-    <div class="result-actions">
-      <button class="action-btn btn-download" onclick="downloadList()">Скачать список карточек</button>
-      <button class="action-btn" onclick="clearList()">Очистить список</button>
-    </div>
-  </div>
 
-  <script>
-    // ==========================================
-    // ВОТ ЗДЕСЬ МЕНЯЙ СОДЕРЖИМОЕ — ЭТО ПРОСТО СПИСОК
-    // ==========================================
-   const cardsData = [
-  // 1. Мотивация и целеполагание (4 карточки)
-  { section: 'Мотивация и целеполагание', title: 'Интересный факт', text: 'Начать урок с неожиданного географического факта (например, про самую длинную реку или самое глубокое озеро) — это сразу вовлекает класс.' },
-  { section: 'Мотивация и целеполагание', title: 'Проблемный вопрос', text: 'Задать вопрос, на который нельзя ответить одним словом: «Почему в одной стране есть пустыни, а в другой — тундра?»' },
-  { section: 'Мотивация и целеполагание', title: 'Фото-загадка', text: 'Показать фото без подписи (вулкан, каньон, ледник). Ученики должны угадать объект и объяснить, по каким признакам они его узнали.' },
-  { section: 'Мотивация и целеполагание', title: 'Карта-пазл', text: 'Дать фрагмент карты без названий. Задача — определить объект и вписать его, опираясь на соседние ориентиры.' },
 
-  // 2. Актуализация знаний (7 карточек)
-  { section: 'Актуализация знаний', title: 'Географическая разминка', text: 'Короткие вопросы на повторение: координаты, стороны света, условные знаки карты. Хорошо работает как фронтальный опрос.' },
-  { section: 'Актуализация знаний', title: 'Найди ошибку', text: 'На доске или слайде — список объектов с одной ошибкой. Ученики находят и объясняют, что не так.' },
-  { section: 'Актуализация знаний', title: 'Терминологический диктант', text: 'Учитель называет определение, ученики записывают термин. Проверяется знание базовых понятий.' },
-  { section: 'Актуализация знаний', title: 'Ассоциации', text: 'Назвать 3 слова-ассоциации к географическому объекту. Помогает вспомнить связи и признаки.' },
-  { section: 'Актуализация знаний', title: 'Мини-кроссворд', text: 'Быстрый кроссворд из 5–7 терминов по прошлой теме. Удобно для проверки запоминания.' },
-  { section: 'Актуализация знаний', title: 'Соотнеси пары', text: 'Сопоставить объект и характеристику (река — длина, гора — высота и т.п.). Развивает точность формулировок.' },
-  { section: 'Актуализация знаний', title: 'Экспресс-тест', text: 'Короткий тест из 5 вопросов с вариантами ответов. Позволяет быстро оценить уровень подготовки класса.' },
 
-  // 3. Изучение нового материала (5 карточек)
-  { section: 'Изучение нового материала', title: 'Работа с картой', text: 'Чтение условных знаков, определение масштаба, измерение расстояний. Можно дать мини-задание на контурной карте.' },
-  { section: 'Изучение нового материала', title: 'Сравнительная характеристика', text: 'Сравнить два объекта (две реки, два климата) по плану: это учит выделять главное и аргументировать.' },
-  { section: 'Изучение нового материала', title: 'Схема-опора', text: 'Вместе с классом составить схему по теме (например, «Факторы климата»). Схема остаётся на доске как опора при ответах.' },
-  { section: 'Изучение нового материала', title: 'Мини-лекция с остановками', text: 'Лекция делится на короткие блоки. После каждого блока — 1–2 вопроса классу для проверки понимания.' },
-  { section: 'Изучение нового материала', title: 'Контурная карта по ходу темы', text: 'По мере объяснения ученики наносят объекты на контурную карту. Это связывает теорию и пространственное представление.' },
+<script>
+document.addEventListener('DOMContentLoaded', () => {
 
-  // 4. Практическая работа (6 карточек)
-  { section: 'Практическая работа', title: 'Расчёт показателей', text: 'Рассчитать протяжённость, разницу во времени, плотность населения. Развивает вычислительные навыки и понимание масштаба.' },
-  { section: 'Практическая работа', title: 'Анализ климатограммы', text: 'Ученики читают график температуры и осадков, определяют тип климата и объясняют причины. Ключевой навык в географии.' },
-  { section: 'Практическая работа', title: 'Построение профиля', text: 'По топографической карте построить профиль местности. Отрабатывает пространственное мышление и работу с горизонталями.' },
-  { section: 'Практическая работа', title: 'Определение координат', text: 'Найти и записать координаты заданных объектов. Тренирует навык работы с градусной сеткой.' },
-  { section: 'Практическая работа', title: 'Измерение расстояний', text: 'Измерить расстояние на карте разными способами (линейкой, циркулем, шагом). Сравнивают результаты и обсуждают погрешности.' },
-  { section: 'Практическая работа', title: 'Масштаб и реальность', text: 'Перевести расстояние на карте в реальные километры и соотнести с известными маршрутами (например, от города до ближайшего моря).' },
+  function updateSelectedList() {
+    const checkboxes = document.querySelectorAll('.select-checkbox:checked');
+    const list = document.getElementById('selected-list');
+    if (!list) return;
+    list.innerHTML = '';
+    checkboxes.forEach(cb => {
+      const itemEl = document.createElement('div');
+      itemEl.style.cssText = 'display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid #eee;';
+      const label = document.createElement('span');
+      label.textContent = `${cb.getAttribute('data-title')} — ${cb.getAttribute('data-text')}`;
+      label.style.flex = '1';
+      const btnRemove = document.createElement('button');
+      btnRemove.textContent = '×';
+      btnRemove.style.cssText = 'background: none; border: none; color: #ef4444; font-weight: 600; cursor: pointer; padding: 4px 8px;';
+      btnRemove.onclick = () => { cb.checked = false; updateSelectedList(); };
+      itemEl.appendChild(label);
+      itemEl.appendChild(btnRemove);
+      list.appendChild(itemEl);
+    });
+    if (checkboxes.length === 0) {
+      list.innerHTML = '<span style="color:#999; font-style:italic;">Пока ничего не выбрано</span>';
+    }
+  }
 
-  // 5. Работа в группах (8 карточек)
-  { section: 'Работа в группах', title: 'Мини-проект «Маршрут»', text: 'Спланировать маршрут по заданным критериям (климат, рельеф, хозяйственная деятельность). Развивает системное мышление.' },
-  { section: 'Работа в группах', title: 'Ролевая игра «Экспедиция»', text: 'Класс делится на роли (картограф, метеоролог, геолог и т.п.), каждая группа отвечает за свой блок информации.' },
-  { section: 'Работа в группах', title: 'Создание легенды карты', text: 'Группа придумывает условные знаки для вымышленной территории и наносит объекты по этим знакам.' },
-  { section: 'Работа в группах', title: 'Сравнение регионов', text: 'Каждой группе достаётся свой регион: они готовят 3–4 тезиса о его особенностях и представляют классу.' },
-  { section: 'Работа в группах', title: 'Инфографика на листе', text: 'Группа делает мини-инфографику на А4 (карта + 3 цифры + 1 факт). Развивает умение структурировать информацию.' },
-  { section: 'Работа в группах', title: 'Презентация 1 минута', text: 'Каждая группа рассказывает о своём объекте ровно 60 секунд. Учит лаконичности и выделению главного.' },
-  { section: 'Работа в группах', title: 'Кросс-проверка', text: 'Группы обмениваются результатами и проверяют друг у друга соответствие фактов и карты. Тренирует критическое мышление.' },
-  { section: 'Работа в группах', title: 'Общий коллаж', text: 'Все группы вносят свой фрагмент в общую карту-коллаж класса. Формирует коллективный продукт урока.' },
+  // Сдвиг трека так, чтобы карточка с индексом index оказалась по центру.
+  // offsetLeft — координата раскладки, scale на неё не влияет, поэтому ошибки не накапливаются.
+  function centerCard(container, track, card) {
+    const containerWidth = container.clientWidth;
+    const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+    const shift = cardCenter - containerWidth / 2;
+    track.style.transform = `translateX(${-shift}px)`;
+  }
 
-  // 6. Цифровые инструменты (8 карточек)
-  { section: 'Цифровые инструменты', title: 'Google Earth / Яндекс Карты', text: 'Использовать спутниковые снимки для анализа местности, сравнения изменений, поиска объектов.' },
-  { section: 'Цифровые инструменты', title: 'Интерактивные тесты', text: 'Быстрые тесты на платформах или в виде карточек — удобно для проверки понимания терминов и понятий.' },
-  { section: 'Цифровые инструменты', title: 'Онлайн-карта с метками', text: 'Поставить метки на онлайн-карте и подписать их. Визуализирует пространственные связи.' },
-  { section: 'Цифровые инструменты', title: 'Виртуальная экскурсия', text: 'Пройти по панорамам улиц и описать увиденное: рельеф, застройку, инфраструктуру.' },
-  { section: 'Цифровые инструменты', title: 'Климатические данные онлайн', text: 'Взять реальные данные по температуре/осадкам и сравнить их с учебником. Развивает навыки работы с источниками.' },
-  { section: 'Цифровые инструменты', title: 'Генератор заданий', text: 'Использовать онлайн-генератор для создания карточек с объектами и вопросами. Экономит время учителя.' },
-  { section: 'Цифровые инструменты', title: 'QR-код с подсказкой', text: 'Разместить QR-код рядом с заданием: он ведёт на подсказку или дополнительный факт. Делает задания интерактивными.' },
-  { section: 'Цифровые инструменты', title: 'Геотеги в презентации', text: 'Добавить геотеги к фотографиям в презентации: ученики видят, где находится объект, и связывают фото с картой.' },
+  function moveCarousel(carouselId, direction) {
+    const container = document.getElementById(carouselId);
+    const track = container.querySelector('.carousel-track');
+    const cards = Array.from(track.querySelectorAll('.card'));
 
-  // 7. Закрепление и рефлексия (7 карточек)
-  { section: 'Закрепление и рефлексия', title: 'Синквейн', text: 'Составить пятистрочное стихотворение по теме урока. Помогает кратко сформулировать суть и выразить отношение.' },
-  { section: 'Закрепление и рефлексия', title: 'Три вопроса', text: 'Каждый ученик формулирует: «Что я понял?», «Что осталось непонятным?», «Какой вопрос я бы задал автору учебника?».' },
-  { section: 'Закрепление и рефлексия', title: 'Плюс-минус-интересно', text: 'Записать: плюс (что понравилось), минус (что было сложно), интересно (какой факт запомнился). Структурирует рефлексию.' },
-  { section: 'Закрепление и рефлексия', title: 'Цепочка фактов', text: 'Один ученик говорит факт, следующий продолжает цепочку, связывая свой факт с предыдущим. Развивает ассоциативное мышление.' },
-  { section: 'Закрепление и рефлексия', title: 'Мини-эссе 50 слов', text: 'Написать короткое эссе: «Как география помогает понимать мир». Тренирует связную речь и аргументацию.' },
-  { section: 'Закрепление и рефлексия', title: 'Карточки-выводы', text: 'Выписать 3 главных вывода урока на отдельные карточки и прикрепить их на доску. Формирует итоговую структуру темы.' },
-  { section: 'Закрепление и рефлексия', title: 'Оценка по шкале', text: 'Оценить свою работу на уроке по шкале 1–5 и кратко обосновать выбор. Развивает навык самооценки.' },
+    let current = cards.findIndex(c => c.classList.contains('active'));
+    if (current === -1) current = 0;
+    const next = Math.min(Math.max(current + direction, 0), cards.length - 1);
+    if (next === current) return; // края — ничего не делаем
 
-  // 8. Домашнее задание (6 карточек)
-  { section: 'Домашнее задание', title: 'Мини-исследование', text: 'Найти информацию о каком-либо объекте (город, река, вулкан) и подготовить 3–4 предложения с объяснением его особенностей.' },
-  { section: 'Домашнее задание', title: 'Контурная карта', text: 'Нанести объекты по теме и подписать их. Это закрепляет пространственные представления и навык работы с картой.' },
-  { section: 'Домашнее задание', title: 'Дневник путешественника', text: 'Написать от лица путешественника 5–6 предложений о маршруте и увиденных объектах. Развивает воображение и связную речь.' },
-  { section: 'Домашнее задание', title: 'Подбор фото с подписями', text: 'Подобрать 3 фото по теме и написать к каждому по 1–2 предложения: что изображено и почему это важно.' },
-  { section: 'Домашнее задание', title: 'Таблица сравнения', text: 'Заполнить таблицу: 2 объекта, 3 критерия сравнения, вывод. Учит структурировать информацию и делать выводы.' },
-  { section: 'Домашнее задание', title: 'План маршрута', text: 'Спланировать короткий маршрут между 2–3 объектами и описать, что можно увидеть по пути. Связывает географию с реальной жизнью.' },
-
-  // 9. Контроль и оценка (8 карточек)
-  { section: 'Контроль и оценка', title: 'Быстрый опрос', text: '5 вопросов по теме с устными ответами. Позволяет оперативно проверить понимание.' },
-  { section: 'Контроль и оценка', title: 'Тест с выбором ответа', text: 'Короткий тест из 7–10 вопросов. Удобно для объективной оценки уровня знаний.' },
-  { section: 'Контроль и оценка', title: 'Задание с картой', text: 'Отметить на контурной карте объекты и подписать их. Проверяет пространственные навыки.' },
-  { section: 'Контроль и оценка', title: 'Объяснение термина', text: 'Ученик объясняет термин своими словами и приводит пример. Проверяет глубину понимания.' },
-  { section: 'Контроль и оценка', title: 'Задача на расчёт', text: 'Решить практическую задачу (разница во времени, расстояние, плотность). Проверяет применение знаний.' },
-  { section: 'Контроль и оценка', title: 'Мини-защита идеи', text: 'Рассказать, как бы ученик организовал мини-исследование по теме. Оценивается логика и аргументация.' },
-  { section: 'Контроль и оценка', title: 'Самопроверка по ключу', text: 'Ученики проверяют свои ответы по ключу и отмечают ошибки. Развивает самостоятельность и внимательность.' },
-  { section: 'Контроль и оценка', title: 'Взаимооценка', text: 'Пары обмениваются работами и дают краткий комментарий: что сделано хорошо и что можно улучшить. Формирует навыки конструктивной обратной связи.' }
-];
-    // ==========================================
-
-    const selectedList = [];
-    const listElement = document.getElementById('selected-list');
-    const container = document.getElementById('cards-container');
-
-    // Группируем карточки по секциям
-    const sections = {};
-    cardsData.forEach(card => {
-      if (!sections[card.section]) sections[card.section] = [];
-      sections[card.section].push(card);
+    // Переключаем классы: активная, соседние чуть видны, остальные почти невидимы
+    cards.forEach((c, i) => {
+      c.classList.remove('active', 'near');
+      if (i === next) c.classList.add('active');
+      else if (i === next - 1 || i === next + 1) c.classList.add('near');
     });
 
-    // Рисуем все секции
-    Object.keys(sections).forEach(sectionName => {
-      const sectionDiv = document.createElement('div');
-      sectionDiv.className = 'section';
-      
-      const titleDiv = document.createElement('div');
-      titleDiv.className = 'section-title';
-      titleDiv.textContent = sectionName;
+    centerCard(container, track, cards[next]);
+  }
 
-      const carousel = document.createElement('div');
-      carousel.className = 'carousel-container';
+  const allStages = {
+    'carousel-1': [
+      { title: 'Этап 1. Приветствие', text: '' },
+      { title: 'Улыбка', text: 'Деление на группы происходит перед входом в аудиторию, когда каждый участнинк выбирает себе улыбку определённого вида. После этого каждая группа приветствует остальных учеников' },
+      { title: 'Карточка 1.3', text: 'Здесь твой текст' },
+      { title: 'Карточка 1.4', text: 'Здесь твой текст' }
+    ],
+    'carousel-2': [
+      { title: 'Карточка 2.1', text: 'Здесь твой текст' },
+      { title: 'Карточка 2.2', text: 'Здесь твой текст' },
+      { title: 'Карточка 2.3', text: 'Здесь твой текст' },
+      { title: 'Карточка 2.4', text: 'Здесь твой текст' },
+      { title: 'Карточка 2.5', text: 'Здесь твой текст' },
+      { title: 'Карточка 2.6', text: 'Здесь твой текст' },
+      { title: 'Карточка 2.7', text: 'Здесь твой текст' }
+    ],
+    'carousel-3': [
+      { title: 'Карточка 3.1', text: 'Здесь твой текст' },
+      { title: 'Карточка 3.2', text: 'Здесь твой текст' },
+      { title: 'Карточка 3.3', text: 'Здесь твой текст' },
+      { title: 'Карточка 3.4', text: 'Здесь твой текст' },
+      { title: 'Карточка 3.5', text: 'Здесь твой текст' }
+    ],
+    'carousel-4': [
+      { title: 'Карточка 4.1', text: 'Здесь твой текст' },
+      { title: 'Карточка 4.2', text: 'Здесь твой текст' },
+      { title: 'Карточка 4.3', text: 'Здесь твой текст' },
+      { title: 'Карточка 4.4', text: 'Здесь твой текст' },
+      { title: 'Карточка 4.5', text: 'Здесь твой текст' },
+      { title: 'Карточка 4.6', text: 'Здесь твой текст' }
+    ],
+    'carousel-5': [
+      { title: 'Карточка 5.1', text: 'Здесь твой текст' },
+      { title: 'Карточка 5.2', text: 'Здесь твой текст' },
+      { title: 'Карточка 5.3', text: 'Здесь твой текст' },
+      { title: 'Карточка 5.4', text: 'Здесь твой текст' },
+      { title: 'Карточка 5.5', text: 'Здесь твой текст' },
+      { title: 'Карточка 5.6', text: 'Здесь твой текст' },
+      { title: 'Карточка 5.7', text: 'Здесь твой текст' },
+      { title: 'Карточка 5.8', text: 'Здесь твой текст' }
+    ],
+    'carousel-6': [
+      { title: 'Карточка 6.1', text: 'Здесь твой текст' },
+      { title: 'Карточка 6.2', text: 'Здесь твой текст' },
+      { title: 'Карточка 6.3', text: 'Здесь твой текст' },
+      { title: 'Карточка 6.4', text: 'Здесь твой текст' },
+      { title: 'Карточка 6.5', text: 'Здесь твой текст' },
+      { title: 'Карточка 6.6', text: 'Здесь твой текст' },
+      { title: 'Карточка 6.7', text: 'Здесь твой текст' },
+      { title: 'Карточка 6.8', text: 'Здесь твой текст' }
+    ],
+    'carousel-7': [
+      { title: 'Карточка 7.1', text: 'Здесь твой текст' },
+      { title: 'Карточка 7.2', text: 'Здесь твой текст' },
+      { title: 'Карточка 7.3', text: 'Здесь твой текст' },
+      { title: 'Карточка 7.4', text: 'Здесь твой текст' },
+      { title: 'Карточка 7.5', text: 'Здесь твой текст' },
+      { title: 'Карточка 7.6', text: 'Здесь твой текст' },
+      { title: 'Карточка 7.7', text: 'Здесь твой текст' }
+    ],
+    'carousel-8': [
+      { title: 'Карточка 8.1', text: 'Здесь твой текст' },
+      { title: 'Карточка 8.2', text: 'Здесь твой текст' },
+      { title: 'Карточка 8.3', text: 'Здесь твой текст' },
+      { title: 'Карточка 8.4', text: 'Здесь твой текст' },
+      { title: 'Карточка 8.5', text: 'Здесь твой текст' },
+      { title: 'Карточка 8.6', text: 'Здесь твой текст' }
+    ],
+    'carousel-9': [
+      { title: 'Карточка 9.1', text: 'Здесь твой текст' },
+      { title: 'Карточка 9.2', text: 'Здесь твой текст' },
+      { title: 'Карточка 9.3', text: 'Здесь твой текст' },
+      { title: 'Карточка 9.4', text: 'Здесь твой текст' },
+      { title: 'Карточка 9.5', text: 'Здесь твой текст' },
+      { title: 'Карточка 9.6', text: 'Здесь твой текст' },
+      { title: 'Карточка 9.7', text: 'Здесь твой текст' },
+      { title: 'Карточка 9.8', text: 'Здесь твой текст' }
+    ]
+  };
 
-      sections[sectionName].forEach(cardData => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-          <h3>${cardData.title}</h3>
-          <p>${cardData.text}</p>
-          <button class="mark-btn" onclick="toggleCard(this)">Отметить</button>
-        `;
-        carousel.appendChild(card);
-      });
+  Object.keys(allStages).forEach(key => {
+    const container = document.getElementById(key);
+    if (!container) return;
 
-      sectionDiv.appendChild(titleDiv);
-      sectionDiv.appendChild(carousel);
-      container.appendChild(sectionDiv);
+    const items = allStages[key];
+    const track = document.createElement('div');
+    track.className = 'carousel-track';
+
+    items.forEach((item, idx) => {
+      const card = document.createElement('div');
+      card.className = (idx === 0) ? 'card active' : 'card'; // без inline-стилей, всем управляет CSS
+
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.classList.add('select-checkbox');
+      cb.setAttribute('data-title', item.title);
+      cb.setAttribute('data-text', item.text);
+      cb.addEventListener('change', updateSelectedList);
+
+      const content = document.createElement('div');
+      content.style.padding = '20px';
+      content.innerHTML = `<h3>${item.title}</h3><p>${item.text}</p>`;
+
+      card.appendChild(cb);
+      card.appendChild(content);
+      track.appendChild(card);
     });
 
-    function toggleCard(btn) {
-      const card = btn.closest('.card');
-      const title = card.querySelector('h3').innerText;
-      const text = card.querySelector('p').innerText;
+    container.appendChild(track);
 
-      if (card.classList.contains('selected')) {
-        card.classList.remove('selected');
-        btn.classList.remove('selected');
-        const index = selectedList.findIndex(item => item.title === title);
-        if (index > -1) selectedList.splice(index, 1);
-      } else {
-        card.classList.add('selected');
-        btn.classList.add('selected');
-        selectedList.push({ title, text });
-      }
-      renderList();
-    }
+    // Сразу центрируем первую карточку при загрузке
+    centerCard(container, track, track.querySelector('.card.active'));
 
-    function renderList() {
-      listElement.innerHTML = '';
-      selectedList.forEach((item, index) => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <span><strong>${item.title}</strong>: ${item.text}</span>
-          <button class="remove-btn" onclick="removeItem(${index})">Убрать</button>
-        `;
-        listElement.appendChild(li);
+    // Стрелки
+    const prevBtn = document.createElement('button');
+    prevBtn.className = 'nav-btn prev';
+    prevBtn.innerHTML = '&#10094;';
+    prevBtn.onclick = () => moveCarousel(key, -1);
+
+    const nextBtn = document.createElement('button');
+    nextBtn.className = 'nav-btn next';
+    nextBtn.innerHTML = '&#10095;';
+    nextBtn.onclick = () => moveCarousel(key, 1);
+
+    container.appendChild(prevBtn);
+    container.appendChild(nextBtn);
+  });
+
+  // Панель внизу — как была
+  const panelContainer = document.getElementById('selection-panel');
+  if (!panelContainer) return;
+
+  panelContainer.style.cssText = `
+    width: 100%; max-width: 1000px; margin: 40px auto 0; background: #fff;
+    border: 1px solid #ddd; border-radius: 12px; padding: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  `;
+
+  const title = document.createElement('h3');
+  title.textContent = 'Выбранные карточки';
+  panelContainer.appendChild(title);
+
+  const formatSelect = document.createElement('select');
+  formatSelect.id = 'download-format';
+  formatSelect.style.cssText = 'padding: 8px; margin-right: 10px; border-radius: 6px; border: 1px solid #ccc;';
+  [
+    { val: 'txt', txt: 'TXT (простой текст)' },
+    { val: 'csv', txt: 'CSV (для Excel)' },
+    { val: 'md', txt: 'MD (для Notion)' },
+    { val: 'json', txt: 'JSON (для программ)' }
+  ].forEach(opt => {
+    const option = document.createElement('option');
+    option.value = opt.val;
+    option.textContent = opt.txt;
+    formatSelect.appendChild(option);
+  });
+  panelContainer.appendChild(formatSelect);
+
+  const btnDownload = document.createElement('button');
+  btnDownload.id = 'btn-download';
+  btnDownload.textContent = 'Скачать список';
+  btnDownload.style.cssText = 'padding: 8px 16px; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer;';
+  panelContainer.appendChild(btnDownload);
+
+  const selectedList = document.createElement('div');
+  selectedList.id = 'selected-list';
+  selectedList.style.marginTop = '20px';
+  panelContainer.appendChild(selectedList);
+
+  btnDownload.addEventListener('click', () => {
+    const checkboxes = document.querySelectorAll('.select-checkbox:checked');
+    if (checkboxes.length === 0) { alert('Сначала отметьте карточки галочками!'); return; }
+
+    const format = document.getElementById('download-format').value;
+    let content = '', mime = '', ext = '';
+
+    if (format === 'txt') {
+      checkboxes.forEach(cb => {
+        content += `- ${cb.getAttribute('data-title')}\n  ${cb.getAttribute('data-text')}\n\n`;
       });
-    }
-
-    function removeItem(index) {
-      selectedList.splice(index, 1);
-      renderList();
-      document.querySelectorAll('.mark-btn').forEach(btn => {
-        const card = btn.closest('.card');
-        const title = card.querySelector('h3').innerText;
-        const isSelected = selectedList.some(item => item.title === title);
-        card.classList.toggle('selected', isSelected);
-        btn.classList.toggle('selected', isSelected);
+      mime = 'text/plain'; ext = '.txt';
+    }     else if (format === 'csv') {
+      content = 'title;text\n';
+      checkboxes.forEach(cb => {
+        const title = cb.getAttribute('data-title').replace(/"/g, '""');
+        const text = cb.getAttribute('data-text').replace(/"/g, '""');
+        content += `"${title}";"${text}"\n`;
       });
+      content = '\ufeff' + content; // BOM — чтобы Excel понял, что это UTF-8
+      mime = 'text/csv;charset=utf-8';
+      ext = '.csv';
+    } else if (format === 'md') {
+      content = '# Выбранные карточки\n\n';
+      checkboxes.forEach(cb => {
+        content += `- **${cb.getAttribute('data-title')}**\n  ${cb.getAttribute('data-text')}\n\n`;
+      });
+      mime = 'text/markdown'; ext = '.md';
+    } else if (format === 'json') {
+      const data = Array.from(checkboxes).map(cb => ({
+        title: cb.getAttribute('data-title'),
+        text: cb.getAttribute('data-text')
+      }));
+      content = JSON.stringify(data, null, 2);
+      mime = 'application/json'; ext = '.json';
     }
 
-    function clearList() {
-      selectedList.length = 0;
-      renderList();
-      document.querySelectorAll('.card').forEach(card => card.classList.remove('selected'));
-      document.querySelectorAll('.mark-btn').forEach(btn => btn.classList.remove('selected'));
-    }
+    const blob = new Blob([content], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'selected-methods' + ext;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
 
-    function downloadList() {
-      if (selectedList.length === 0) {
-        alert('Сначала отметьте карточки!');
-        return;
-      }
-      const content = selectedList.map(item => `${item.title}: ${item.text}`).join('\n\n');
-      const blob = new Blob([content], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'selected-cards.txt';
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-  </script>
+  updateSelectedList();
+});
+</script>
+
+<div style="height: 60px;"></div>
+<div id="selection-panel"></div>
+
+
+
 </body>
 </html>
