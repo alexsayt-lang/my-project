@@ -146,11 +146,12 @@ body {
 .full-screen-carousel {
   position: relative;
   width: 100%;
-  height: 85vh;
+  min-height: 480px;          /* Минимальная высота, чтобы не схлопывалось */
   overflow: hidden;
   display: flex;
   align-items: center;
   padding: 0 20px;
+  box-sizing: border-box;
 }
 
 .carousel-track {
@@ -162,27 +163,60 @@ body {
 
 /* Базовые стили карточки — без тени */
 .card {
-  min-width: 72vw;
-  width: 72vw;
-  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;    /* Центрируем по вертикали */
+  align-items: stretch;     
+  min-width: 800px;
+  width: 100%;                /* На всю ширину контейнера */
+  max-width: 900px;           /* Но не шире 900px — чтобы на больших экранах было красиво */
+  height: auto;               /* Высота по контенту, а не жёстко 80vh */
   flex: 0 0 auto;
   box-sizing: border-box;
-  padding: 40px;
+  padding: 40px;              /* Отступы внутри карточки */
   border-radius: 24px;
   background: #fff;
-
-  /* Никакой тени здесь */
   box-shadow: none;
   filter: none !important;
 
-  /* Неактивные карточки — почти невидимы */
+  /* Неактивные карточки */
+  transform-origin: center center;
   transform: scale(0.15);
   opacity: 0.1;
   pointer-events: none;
   transition: transform 0.5s, opacity 0.5s;
-
-  /* Гарантируем, что неактивные ниже активной */
   z-index: 1;
+
+  /* Центрируем содержимое карточки */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;    /* По вертикали */
+  align-items: center;        /* По горизонтали */
+}
+
+@media (max-width: 768px) {
+  .card {
+    min-width: 95vw;          /* на телефоне почти во всю ширину */
+    padding: 20px 16px;
+  }
+}
+/* Блок с чекбоксом — фиксируем в левом верхнем углу */
+.card-label-wrapper {
+  position: absolute;          /* Вытаскиваем из потока */
+  top: 20px;
+  left: 20px;                   /* Отступ как у padding карточки */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 10;                  /* Чтобы был поверх всего */
+}
+
+/* Чтобы карточка «чувствовала» высоту блока с чекбоксом,
+   добавим невидимый отступ сверху */
+.card::before {
+  content: "";
+  height: 40px;                 /* Высота под чекбокс */
+  display: block;
 }
 
 /* Активная карточка — только у неё есть тень */
@@ -190,13 +224,12 @@ body {
   background-color: #eef2f7;
   border-left: 6px solid #2c6aa0;
   box-shadow: 0 12px 24px rgba(44, 106, 160, 0.14);
-  filter: none; /* убираем любые фильтры по умолчанию */
-
   transform: scale(1);
   opacity: 1;
   pointer-events: all;
-  z-index: 50; /* активная всегда сверху */
+  z-index: 50;
   position: relative;
+  padding: 56px 48px;         /* Чуть больше отступов у активной */
 }
 .card.active h3 {
   color: #1a3b5a;
@@ -229,7 +262,7 @@ body {
 /* Заголовок: очень крупный, по центру, с хорошим отступом */
 .card h3 {
   margin: 0 0 28px 0;
-  font-size: 3.6rem;          /* Очень крупный заголовок */
+  font-size: 3.6rem;          /* Крупно на больших экранах */
   line-height: 1.05;
   color: #1a3b5a;
   text-align: center;
@@ -239,13 +272,14 @@ body {
 .card p {
   margin: 0;
   color: #555;
-  font-size: 1.5rem;           /* Крупный основной текст */
+  font-size: 1.5rem;           /* Читаемый размер */
   line-height: 1.45;
   text-align: left;
-  max-width: 760px;            /* Чтобы строки не были бесконечными */
+  max-width: 760px;            /* Строки не растягиваются на всю карточку */
   margin-left: auto;
   margin-right: auto;
 }
+
 
 
 
@@ -487,6 +521,34 @@ body {
   box-sizing: border-box;
 }
 
+@media (max-width: 600px) {
+  .card {
+    padding: 24px 16px;        /* Меньше отступов на телефоне */
+    max-width: 100%;          /* На телефоне карточка может быть на всю ширину */
+  }
+
+  .card.active {
+    padding: 32px 20px;
+  }
+
+  .card h3 {
+    font-size: 2rem;          /* Достаточно крупный, но влезает */
+    margin-bottom: 20px;
+  }
+
+  .card p {
+    font-size: 1.1rem;         /* Комфортный размер на экране телефона */
+    line-height: 1.5;
+    max-width: 100%;           /* На телефоне строки могут быть чуть длиннее */
+  }
+
+  .hero-section {
+    height: 360px;             /* Чуть ниже шапка на телефоне */
+  }
+}
+
+
+
 
 
   </style>
@@ -495,9 +557,7 @@ body {
 <div class="hero-section">
   <div class="hero-bg">
     <!-- Ссылка на фото прямо здесь, в src -->
-    <img src="https://images.unsplash.com/photo-1506744038136-4627383b6481?q=80&w=1920&auto=format&fit=crop" 
-         alt="" 
-         onerror="this.style.display='none'">
+    <img src="https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=1920&auto=format&fit=crop" alt="фон" onerror="this.style.display='none'">
   </div>
   <div class="hero-overlay"></div>
   <div class="hero-content">
@@ -574,6 +634,8 @@ function updateSelectedList() {
     list.innerHTML = '<span style="color:#999; font-style:italic; padding: 16px; display:block;">Пока ничего не выбрано</span>';
     return;
   }
+
+
 
   checkboxes.forEach(cb => {
     const row = document.createElement('div');
@@ -727,15 +789,17 @@ function updateSelectedList() {
 
     items.forEach((item, idx) => {
   const card = document.createElement('div');
+  // Первая карточка сразу получает active
   card.className = (idx === 0) ? 'card active' : 'card';
 
-  // Чекбокс + понятная подпись «Отметить»
+  // Создаём чекбокс всегда — чтобы скрипты не ломались, если ищут .select-checkbox
   const cb = document.createElement('input');
   cb.type = 'checkbox';
   cb.classList.add('select-checkbox');
   cb.setAttribute('data-title', item.title);
   cb.setAttribute('data-text', item.text);
   cb.addEventListener('change', updateSelectedList);
+  cb.id = `cb-${key}-${idx}`;
 
   const labelWrapper = document.createElement('div');
   labelWrapper.className = 'card-label-wrapper';
@@ -743,11 +807,16 @@ function updateSelectedList() {
   const labelText = document.createElement('label');
   labelText.className = 'label-text';
   labelText.textContent = 'Отметить';
-  labelText.htmlFor = `cb-${key}-${idx}`; // опционально: связать label и input
-  cb.id = `cb-${key}-${idx}`;
+  labelText.htmlFor = `cb-${key}-${idx}`;
 
   labelWrapper.appendChild(cb);
   labelWrapper.appendChild(labelText);
+
+  // ГЛАВНОЕ ИЗМЕНЕНИЕ: для первой карточки скрываем блок
+  if (idx === 0) {
+    labelWrapper.style.display = 'none';      // не видно на экране
+    cb.disabled = true;                      // на всякий случай запрещаем взаимодействие
+  }
 
   const content = document.createElement('div');
   content.innerHTML = `<h3>${item.title}</h3><p>${item.text}</p>`;
@@ -757,8 +826,8 @@ function updateSelectedList() {
   track.appendChild(card);
 });
 
+container.appendChild(track);
 
-    container.appendChild(track);
 
     // Сразу центрируем первую карточку при загрузке
     centerCard(container, track, track.querySelector('.card.active'));
@@ -867,6 +936,116 @@ function updateSelectedList() {
 
   updateSelectedList();
 });
+
+
+
+// 2. ТОЛЬКО ПОСЛЕ ЭТОГО запускаем показ соседей
+document.addEventListener('DOMContentLoaded', () => {
+  const cards = Array.from(document.querySelectorAll('.card'));
+  if (cards.length > 0) cards[0].classList.add('active');
+  if (cards.length > 1) cards[1].classList.add('near');
+});
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Находим все контейнеры каруселей (подбери селектор под свой класс, если у тебя не .full-screen-carousel)
+  const carousels = document.querySelectorAll('.full-screen-carousel');
+
+  carousels.forEach(carousel => {
+    const cards = Array.from(carousel.querySelectorAll('.card'));
+    if (cards.length === 0) return;
+
+    // 1. Делаем первую карточку активной
+    cards[0].classList.add('active');
+
+    // 2. Сразу показываем вторую карточку как соседа
+    if (cards[1]) {
+      cards[1].classList.add('near');
+    }
+  });
+
+  // --- Дальше тот же самый умный код, который обновляет соседей при кликах ---
+  function updateNeighborsForAllCarousels() {
+    document.querySelectorAll('.full-screen-carousel').forEach(carousel => {
+      const cards = Array.from(carousel.querySelectorAll('.card'));
+      const active = carousel.querySelector('.card.active');
+      if (!active) return;
+
+      const idx = cards.indexOf(active);
+
+      // Сбрасываем near у всех карточек внутри этой карусели
+      cards.forEach(c => c.classList.remove('near'));
+
+      // Ставим near соседям
+      if (idx > 0) cards[idx - 1].classList.add('near');
+      if (idx < cards.length - 1) cards[idx + 1].classList.add('near');
+    });
+  }
+
+  // Обновляем соседей при клике на кнопки (ищем любые кнопки с классами prev/next/nav-btn)
+  document.querySelectorAll('.prev, .next, .nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      setTimeout(updateNeighborsForAllCarousels, 50);
+    });
+  });
+});
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const carousels = document.querySelectorAll('.full-screen-carousel');
+
+  carousels.forEach(carousel => {
+    const checkboxes = carousel.querySelectorAll('.select-checkbox');
+
+    checkboxes.forEach(cb => {
+      cb.addEventListener('click', (e) => {
+        // Если кликнули по уже отмеченной — она просто снимется (стандартное поведение)
+        if (cb.checked) {
+          // Перед тем как браузер сделает своё, принудительно снимаем все остальные
+          checkboxes.forEach(other => {
+            if (other !== cb) {
+              other.checked = false;
+              const card = other.closest('.card');
+              if (card) {
+                card.classList.remove('selected');
+                // Если у тебя есть какой-то свой класс выделения — тоже убери его
+              }
+            }
+          });
+        }
+        // Если сняли галочку с единственной — можно дополнительно сбросить класс у карточки
+        else {
+          const card = cb.closest('.card');
+          if (card) card.classList.remove('selected');
+        }
+      });
+    });
+  });
+
+// В конце DOMContentLoaded, после создания всех каруселей
+requestAnimationFrame(() => {
+  document.querySelectorAll('.full-screen-carousel').forEach(container => {
+    const track = container.querySelector('.carousel-track');
+    const active = container.querySelector('.card.active');
+    if (active) {
+      const containerWidth = container.clientWidth;
+      const cardCenter = active.offsetLeft + active.offsetWidth / 2;
+      const shift = cardCenter - containerWidth / 2;
+      track.style.transform = `translateX(${-shift}px)`;
+    }
+  });
+});
+
+
+
+});
+
+
+
+
 </script>
 
 <div style="height: 60px;"></div>
