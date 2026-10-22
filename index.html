@@ -24,12 +24,14 @@ body {
 /* Герой-блок: фон + заголовок поверх фото */
 .hero-section {
   position: relative;
-  height: 460px;
+  height: 460px;                /* фиксированная высота */
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  overflow: hidden;
+  overflow: hidden;             /* обрезает всё, что вылезает */
+  width: 100%;
+  max-width: 100%;
 }
 .hero-bg {
   position: absolute;
@@ -46,6 +48,8 @@ body {
   display: block;
   opacity: 1;
   transition: opacity 0.3s ease;
+  position: absolute;           /* чтобы не занимало место в потоке */
+  top: 0; left: 0; right: 0; bottom: 0;
 }
 
 /* Если картинка не загрузилась — она исчезнет, останется только градиент */
@@ -143,63 +147,69 @@ body {
   margin-bottom: 40px;
 }
 
+/* Обёртка карусели — только центрируем сам блок, не пытаемся центрировать трек через flex */
 .full-screen-carousel {
   position: relative;
   width: 100%;
-  min-height: 480px;          /* Минимальная высота, чтобы не схлопывалось */
+  min-height: 480px;
   overflow: hidden;
-  display: flex;
-  align-items: center;
   padding: 0 20px;
   box-sizing: border-box;
+  display: block; /* flex тут не нужен */
 }
 
+/* Трек — flex, но без лишних ограничений */
 .carousel-track {
   display: flex;
+  flex-wrap: nowrap;
   gap: 20px;
-  width: max-content;
   transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  max-width: none;
 }
+
+
 
 /* Базовые стили карточки — без тени */
 .card {
+  /* Фиксированный размер для ПК — так центрирование будет точным */
+  width: 860px;           /* подбираем под max-width 900px минус padding */
+  min-width: 860px;      /* чтобы не сжималась */
+  max-width: 860px;
+
   display: flex;
   flex-direction: column;
-  justify-content: center;    /* Центрируем по вертикали */
-  align-items: stretch;     
-  min-width: 800px;
-  width: 100%;                /* На всю ширину контейнера */
-  max-width: 900px;           /* Но не шире 900px — чтобы на больших экранах было красиво */
-  height: auto;               /* Высота по контенту, а не жёстко 80vh */
-  flex: 0 0 auto;
+  justify-content: center;
+  align-items: stretch;
+  height: auto;
+  flex: 0 0 auto;         /* карточка не растягивается и не сжимается */
   box-sizing: border-box;
-  padding: 40px;              /* Отступы внутри карточки */
+  padding: 40px;
   border-radius: 24px;
   background: #fff;
   box-shadow: none;
   filter: none !important;
 
-  /* Неактивные карточки */
   transform-origin: center center;
   transform: scale(0.15);
   opacity: 0.1;
   pointer-events: none;
   transition: transform 0.5s, opacity 0.5s;
   z-index: 1;
-
-  /* Центрируем содержимое карточки */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;    /* По вертикали */
-  align-items: center;        /* По горизонтали */
 }
-
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .card {
-    min-width: 95vw;          /* на телефоне почти во всю ширину */
+    width: 100%;
+    min-width: auto;
+    max-width: none;
     padding: 20px 16px;
+    border-radius: 16px;
   }
 }
+
+
+  /* На мобильном активная карточка не должна быть слишком большой */
+ 
+
 /* Блок с чекбоксом — фиксируем в левом верхнем углу */
 .card-label-wrapper {
   position: absolute;          /* Вытаскиваем из потока */
@@ -220,7 +230,7 @@ body {
 }
 
 /* Активная карточка — только у неё есть тень */
-.card.active {
+ .card.active {
   background-color: #eef2f7;
   border-left: 6px solid #2c6aa0;
   box-shadow: 0 12px 24px rgba(44, 106, 160, 0.14);
@@ -229,7 +239,7 @@ body {
   pointer-events: all;
   z-index: 50;
   position: relative;
-  padding: 56px 48px;         /* Чуть больше отступов у активной */
+  padding: 56px 48px;
 }
 .card.active h3 {
   color: #1a3b5a;
@@ -272,13 +282,24 @@ body {
 .card p {
   margin: 0;
   color: #555;
-  font-size: 1.5rem;           /* Читаемый размер */
+  font-size: 1.5rem;
   line-height: 1.45;
   text-align: left;
-  max-width: 760px;            /* Строки не растягиваются на всю карточку */
+  max-width: 100%;           /* не шире карточки */
+  word-wrap: break-word;     /* перенос длинных слов */
+  overflow-wrap: break-word;
   margin-left: auto;
   margin-right: auto;
 }
+
+@media (max-width: 600px) {
+  .card p {
+    font-size: 1rem;          /* чуть меньше шрифт на очень маленьких экранах */
+    line-height: 1.5;
+    padding: 0 4px;           /* небольшие боковые отступы для текста */
+  }
+}
+
 
 
 
@@ -549,6 +570,14 @@ body {
 
 
 
+@media (max-width: 600px) {
+  .nav-btn {
+    padding: 12px 18px;
+    font-size: 22px;
+    left: 10px !important;
+    right: 10px !important;
+  }
+}
 
 
   </style>
@@ -557,7 +586,7 @@ body {
 <div class="hero-section">
   <div class="hero-bg">
     <!-- Ссылка на фото прямо здесь, в src -->
-    <img src="https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=1920&auto=format&fit=crop" alt="фон" onerror="this.style.display='none'">
+    <img src="hero-bg.jpg" alt="фон для урока" onerror="console.log('Картинка не найдена'); this.style.opacity=0.3; this.border='2px dashed red';">
   </div>
   <div class="hero-overlay"></div>
   <div class="hero-content">
