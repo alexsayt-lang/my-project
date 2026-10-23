@@ -3,579 +3,305 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Проект: Карточки по русскому языку</title>
+  <title>Методический конструктор уроков</title>
   <style>
     :root {
-  --primary: #2c3e50;
-  --accent: #3498db;
-  --bg-overlay: rgba(0, 0, 0, 0.7);
-  --text-light: #ffffff;
-  --card-bg: #ffffff;
-}
+      --primary: #2c3e50;
+      --accent: #3498db;
+      --bg-overlay: rgba(0, 0, 0, 0.7);
+      --text-light: #ffffff;
+      --card-bg: #ffffff;
+    }
 
-body {
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  background: #f4f6f9;
-  color: #333;
-  margin: 0;
-  padding: 0;
-}
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: #f4f6f9;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden; /* запрет горизонтальной прокрутки страницы */
+    }
 
-/* Герой-блок: фон + заголовок поверх фото */
-.hero-section {
-  position: relative;
-  height: 460px;                /* фиксированная высота */
+    * { box-sizing: border-box; }
+
+    /* Герой-блок */
+    .hero-section {
+      position: relative;
+      height: 460px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+      width: 100%;
+    }
+    .hero-bg {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      z-index: 1;
+    }
+    .hero-bg img {
+      width: 100%; height: 100%; object-fit: cover;
+      display: block; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    }
+    .hero-overlay {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--bg-overlay); z-index: 2;
+    }
+    .hero-content {
+      position: relative; z-index: 3; max-width: 900px; padding: 20px;
+    }
+    .hero-title {
+      font-size: 2.6rem; font-weight: 700; color: var(--text-light);
+      line-height: 1.2; margin: 0 0 8px 0; text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .hero-subtitle {
+      font-size: 1.15rem; color: #ecf0f1; margin: 0 0 30px 0; font-weight: 400;
+    }
+
+    /* Инструкция */
+    .instruction-box {
+      background: white; border-left: 6px solid var(--accent);
+      padding: 32px; margin-bottom: 50px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+    }
+    .instruction-box h3 {
+      margin-top: 0; color: var(--primary); font-size: 1.3rem;
+    }
+    .steps-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px; margin-top: 24px;
+    }
+    .step-card {
+      padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px; background: #fafbfc;
+    }
+    .step-card h4 {
+      margin: 0 0 10px 0; color: var(--primary);
+      font-size: 1rem; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .step-card p {
+      margin: 0; color: #555; font-size: 0.92rem; line-height: 1.5;
+    }
+
+    /* Секции */
+    .section { width: 100%; padding: 0 20px; }
+    .section-title {
+      font-size: 1.5rem; font-weight: 600; color: var(--primary);
+      margin: 48px 0 20px 0; padding-left: 16px; border-left: 5px solid var(--accent);
+    }
+    .single-carousel-block { margin-bottom: 40px; }
+
+    /* Карусель */
+    .full-screen-carousel {
+      position: relative; width: 100%; min-height: 520px; /* фиксируем высоту, чтобы не схлопывалось */
+      overflow: hidden; padding: 0 20px; box-sizing: border-box;
+    }
+    .carousel-track {
+      display: flex; flex-wrap: nowrap; gap: 20px;
+      transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1); max-width: none;
+    }
+
+    /* Карточка */
+    .card {
+      width: 860px; min-width: 860px; max-width: 860px;
+      display: flex; flex-direction: column; justify-content: center; align-items: stretch;
+      height: auto; flex: 0 0 auto; box-sizing: border-box; padding: 40px;
+      border-radius: 24px; background: #fff; box-shadow: none; filter: none !important;
+      transform-origin: center center; transform: scale(0.15); opacity: 0.1;
+      pointer-events: none; transition: transform 0.5s, opacity 0.5s; z-index: 1;
+    }
+    .card.active {
+      background-color: #eef2f7; border-left: 6px solid #2c6aa0;
+      box-shadow: 0 12px 24px rgba(44, 106, 160, 0.14);
+      transform: scale(1); opacity: 1; pointer-events: all; z-index: 50;
+      position: relative; padding: 56px 48px;
+    }
+    .card.near {
+      transform: scale(0.8); opacity: 0.35; z-index: 5;
+    }
+
+    /* Чекбокс и подпись «Отметить» */
+    .card-label-wrapper {
+      position: absolute; top: 20px; left: 20px; display: flex; align-items: center; gap: 10px; z-index: 10;
+    }
+    .select-checkbox {
+      margin: 0; width: 20px; height: 20px; cursor: pointer;
+    }
+    .label-text {
+      font-size: 0.95rem; color: #555; cursor: pointer; user-select: none;
+    }
+
+    .card::before {
+      content: ""; height: 40px; display: block;
+    }
+
+    /* Контент карточки */
+    .card h3 {
+      margin: 0 0 28px 0; font-size: 3.6rem; line-height: 1.05; color: #1a3b5a;
+      text-align: center; font-weight: 700;
+    }
+    .card p {
+      margin: 0; color: #555; font-size: 1.5rem; line-height: 1.45;
+      text-align: left; max-width: 100%; word-wrap: break-word; overflow-wrap: break-word;
+      margin-left: auto; margin-right: auto;
+    }
+
+    /* Навигация */
+    .nav-btn {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      background: rgba(255,255,255,0.9); border: none; cursor: pointer; z-index: 20;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2); color: #333;
+    }
+    .prev { left: 20px; }
+    .next { right: 20px; }
+
+    /* Нижний блок выбранных карточек */
+    #result-area {
+      background: white; padding: 32px; border-radius: 12px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.08); margin-top: 50px;
+    }
+    #selected-list {
+      list-style: none; padding: 0; margin: 24px 0;
+    }
+    #selected-list li {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: 14px 0; border-bottom: 1px solid #f0f2f5;
+    }
+    .selected-title {
+      font-weight: 700; color: #2c3e50; font-size: 1rem; line-height: 1.3; margin-bottom: 4px;
+    }
+    .selected-text {
+      color: #6b7280; font-size: 0.9rem; line-height: 1.4;
+    }
+    .remove-btn {
+      background: none; border: none; color: #ef4444; cursor: pointer;
+      font-size: 0.85rem; font-weight: 600; padding: 8px 12px;
+      border-radius: 6px; transition: background 0.2s, color 0.2s; margin-left: 10px;
+    }
+    .remove-btn:hover { background: #fee2e2; color: #b91c1c; }
+
+    /* Эффекты наведения */
+    .card:hover:not(.active) { opacity: 0.6; cursor: pointer; }
+    .card.active:hover {
+      transform: scale(1.03) !important; box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+      z-index: 60; transition: transform 0.2s ease, box-shadow 0.3s ease;
+    }
+    .card.near:hover { opacity: 0.8; transform: scale(0.85) !important; cursor: pointer; }
+
+    /* --- МОБИЛЬНЫЕ СТИЛИ --- */
+    @media (max-width: 1024px) {
+      .card { width: 100%; min-width: auto; max-width: none; padding: 20px 16px; border-radius: 16px; }
+      .card.active { padding: 32px 20px; }
+    }
+    @media (max-width: 768px) {
+      .card { min-width: 95vw; height: 80vh; padding: 20px; }
+      .card.active { transform: scale(0.98); padding: 24px 16px; }
+      .card h3 { font-size: 2rem; margin-bottom: 20px; }
+      .card p { font-size: 1.1rem; line-height: 1.5; padding: 0 4px; }
+      .hero-section { height: 360px; }
+      .nav-btn {
+        padding: 12px 18px; font-size: 22px; left: 10px !important; right: 10px !important;
+        border-radius: 12px;
+      }
+    }
+    @media (max-width: 600px) {
+      .card h3 { font-size: 1.6rem; text-align: left; }
+      .card p { font-size: 1rem; line-height: 1.5; }
+      .nav-btn { padding: 10px 14px; font-size: 20px; }
+    }
+
+.export-controls {
   display: flex;
   align-items: center;
-  justify-content: center;
-  text-align: center;
-  overflow: hidden;             /* обрезает всё, что вылезает */
-  width: 100%;
-  max-width: 100%;
-}
-.hero-bg {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  /* Это страховка: красивый градиент, если фото не придёт */
-  background: linear-gradient(135deg, #1e3c72, #2a5298);
-  z-index: 1;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 12px 0;
+  border-top: 1px solid #e5e7eb;
 }
 
-.hero-bg img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;      /* Картинка заполнит блок, не искажаясь */
-  display: block;
-  opacity: 1;
-  transition: opacity 0.3s ease;
-  position: absolute;           /* чтобы не занимало место в потоке */
-  top: 0; left: 0; right: 0; bottom: 0;
-}
-
-/* Если картинка не загрузилась — она исчезнет, останется только градиент */
-.hero-bg img[onerror] {
-  display: none;
-}
-
-
-.hero-overlay {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: var(--bg-overlay);
-  z-index: 2;
-}
-.hero-content {
-  position: relative;
-  z-index: 3;
-  max-width: 900px;
-  padding: 20px;
-}
-.hero-title {
-  font-size: 2.6rem;
-  font-weight: 700;
-  color: var(--text-light);
-  line-height: 1.2;
-  margin: 0 0 8px 0;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-.hero-subtitle {
-  font-size: 1.15rem;
-  color: #ecf0f1;
-  margin: 0 0 30px 0;
-  font-weight: 400;
-}
-
-/* Инструкция */
-.instruction-box {
-  background: white;
-  border-left: 6px solid var(--accent);
-  padding: 32px;
-  margin-bottom: 50px;
-  box-shadow: 0 6px 24px rgba(0,0,0,0.08);
-}
-.instruction-box h3 {
-  margin-top: 0;
-  color: var(--primary);
-  font-size: 1.3rem;
-}
-.steps-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 24px;
-  margin-top: 24px;
-}
-.step-card {
-  padding: 20px;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  background: #fafbfc;
-}
-.step-card h4 {
-  margin: 0 0 10px 0;
-  color: var(--primary);
-  font-size: 1rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-.step-card p {
-  margin: 0;
-  color: #555;
-  font-size: 0.92rem;
-  line-height: 1.5;
-}
-
-/* Карусели и карточки */
-/* Найди свой родительский класс (например .section) и поставь ему это */
-.section {
-  width: 100%;
-  max-width: 100%;          /* Никакого ограничения в пикселях! */
-  padding: 0 20px;          /* Только отступы по краям экрана */
-  box-sizing: border-box;
-}
-
-.section-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--primary);
-  margin: 48px 0 20px 0;
-  padding-left: 16px; /* отступ слева, чтобы не прилипал к границе */
-  border-left: 5px solid var(--accent); /* акцентная линия слева */
-}
-/* Обёртка карусели — почти на весь экран */
-.single-carousel-block {
-  margin-bottom: 40px;
-}
-
-/* Обёртка карусели — только центрируем сам блок, не пытаемся центрировать трек через flex */
-.full-screen-carousel {
-  position: relative;
-  width: 100%;
-  min-height: 480px;
-  overflow: hidden;
-  padding: 0 20px;
-  box-sizing: border-box;
-  display: block; /* flex тут не нужен */
-}
-
-/* Трек — flex, но без лишних ограничений */
-.carousel-track {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 20px;
-  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-  max-width: none;
-}
-
-
-
-/* Базовые стили карточки — без тени */
-.card {
-  /* Фиксированный размер для ПК — так центрирование будет точным */
-  width: 860px;           /* подбираем под max-width 900px минус padding */
-  min-width: 860px;      /* чтобы не сжималась */
-  max-width: 860px;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: stretch;
-  height: auto;
-  flex: 0 0 auto;         /* карточка не растягивается и не сжимается */
-  box-sizing: border-box;
-  padding: 40px;
-  border-radius: 24px;
+#export-format {
+  padding: 8px 12px;
+  font-size: 0.95rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
   background: #fff;
-  box-shadow: none;
-  filter: none !important;
-
-  transform-origin: center center;
-  transform: scale(0.15);
-  opacity: 0.1;
-  pointer-events: none;
-  transition: transform 0.5s, opacity 0.5s;
-  z-index: 1;
-}
-@media (max-width: 1024px) {
-  .card {
-    width: 100%;
-    min-width: auto;
-    max-width: none;
-    padding: 20px 16px;
-    border-radius: 16px;
-  }
 }
 
-
-  /* На мобильном активная карточка не должна быть слишком большой */
- 
-
-/* Блок с чекбоксом — фиксируем в левом верхнем углу */
-.card-label-wrapper {
-  position: absolute;          /* Вытаскиваем из потока */
-  top: 20px;
-  left: 20px;                   /* Отступ как у padding карточки */
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  z-index: 10;                  /* Чтобы был поверх всего */
+#download-btn {
+  padding: 8px 20px;
+  font-weight: 600;
+  color: #fff;
+  background-color: var(--accent);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-/* Чтобы карточка «чувствовала» высоту блока с чекбоксом,
-   добавим невидимый отступ сверху */
-.card::before {
-  content: "";
-  height: 40px;                 /* Высота под чекбокс */
-  display: block;
+#download-btn:hover {
+  background-color: #2980b9;
 }
 
-/* Активная карточка — только у неё есть тень */
- .card.active {
-  background-color: #eef2f7;
-  border-left: 6px solid #2c6aa0;
-  box-shadow: 0 12px 24px rgba(44, 106, 160, 0.14);
-  transform: scale(1);
-  opacity: 1;
-  pointer-events: all;
-  z-index: 50;
-  position: relative;
-  padding: 56px 48px;
-}
-.card.active h3 {
-  color: #1a3b5a;
-  font-weight: 700;
+#download-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 
-/* Кнопки */
+
+
 .nav-btn {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(255,255,255,0.9);
-  border: none;
-  padding: 16px 24px;
-  cursor: pointer;
-  font-size: 28px;
-  z-index: 20;
-  border-radius: 50%;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  color: #333;
-}
-.prev { left: 20px; }
-.next { right: 20px; }
-
-@media (max-width: 768px) {
-  .card { min-width: 95vw; height: 80vh; padding: 20px; }
-  .card.active { transform: scale(0.95); }
-}
-
-/* Заголовок: очень крупный, по центру, с хорошим отступом */
-.card h3 {
-  margin: 0 0 28px 0;
-  font-size: 3.6rem;          /* Крупно на больших экранах */
-  line-height: 1.05;
-  color: #1a3b5a;
-  text-align: center;
-  font-weight: 700;
-}
-
-.card p {
-  margin: 0;
-  color: #555;
-  font-size: 1.5rem;
-  line-height: 1.45;
-  text-align: left;
-  max-width: 100%;           /* не шире карточки */
-  word-wrap: break-word;     /* перенос длинных слов */
-  overflow-wrap: break-word;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-@media (max-width: 600px) {
-  .card p {
-    font-size: 1rem;          /* чуть меньше шрифт на очень маленьких экранах */
-    line-height: 1.5;
-    padding: 0 4px;           /* небольшие боковые отступы для текста */
-  }
-}
-
-
-
-
-
-button.mark-btn {
-  width: 100%;
-  padding: 14px;
-  background: #e2e8f0;
-  border: none;
-  border-radius: 8px;
-  color: #2d3748;
-  cursor: pointer;
-  font-weight: 500;
-  margin-top: 16px;
-  transition: all 0.2s;
-}
-button.mark-btn:hover {
-  background: #cbd5e0;
-}
-button.mark-btn.selected {
-  background: var(--accent);
-  color: white;
-}
-#result-area {
-  background: white;
-  padding: 32px;
-  border-radius: 12px;
-  box-shadow: 0 6px 24px rgba(0,0,0,0.08);
-  margin-top: 50px;
-}
-#selected-list {
-  list-style: none;
-  padding: 0;
-  margin: 24px 0;
-}
-#selected-list li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 0;
-  border-bottom: 1px solid #edf2f7;
-}
-.remove-btn {
-  color: #ef4444;
-  background: none;
+  background: rgba(255, 255, 255, 0.95);
   border: none;
   cursor: pointer;
-  text-decoration: underline;
-  font-size: 0.9rem;
-}
-.result-actions {
-  margin-top: 28px;
-  display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
-}
-button.action-btn {
-  padding: 14px 22px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 500;
-}
-.btn-download {
-  background: var(--accent);
-  color: white;
-}
-.card.spacer {
-  width: 120px;            /* Ширина «пустого места» */
-  min-width: 120px;
-  background: transparent; /* Полностью прозрачный фон */
-  box-shadow: none;         /* Без тени */
-  opacity: 0;               /* Совсем невидимы */
-  pointer-events: none;     /* По ним нельзя кликнуть */
-}
-/* Соседние карточки — чуть видны по бокам от центральной */
-.card.near {
-  transform: scale(0.8);
-  opacity: 0.35;
-  z-index: 5;
-}
-/* Подпись «Отметить» рядом с чекбоксом */
-.card-label-wrapper {
+  z-index: 30;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  border-radius: 50%; /* делает кнопку круглой */
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 16px;
-}
-.select-checkbox {
-  margin: 0;
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-}
-.label-text {
-  font-size: 0.95rem;
-  color: #555;
-  cursor: pointer;
-  user-select: none;
-}
-
-/* Кнопка «Удалить» в списке выбранных — понятная и заметная */
-.remove-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 14px;
-  border-bottom: 1px solid #eee;
-}
-.remove-btn {
-  background: #fee2e2;
-  color: #b91c1c;
-  border: 1px solid #ef4444;
-  border-radius: 6px;
-  padding: 6px 12px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.remove-btn:hover {
-  background: #ef4444;
-  color: white;
-  border-color: #ef4444;
-}
-/* Эффект при наведении на карточку */
-/* Наведение — только визуальное увеличение, без тени у неактивных */
-.card:hover {
-  /* У неактивных — только лёгкое увеличение, тень не рисуем */
-  transform: scale(1.02) !important;
-  z-index: 20;
-  /* filter: drop-shadow НЕ добавляем сюда — иначе тень появится у всех */
-}
-/* Чтобы активная карточка не «прыгала» при наведении */
-/* Для активной карточки при наведении — можно добавить чуть более заметную тень */
-/* Эффект наведения на активную карточку */
-.card.active:hover {
-  transform: scale(1.03) !important;       /* Чуть увеличиваем — всего на 3% */
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);  /* Лёгкая, полупрозрачная тень */
-  z-index: 60;                             /* Чтобы точно была поверх всего */
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
-}
-
-/* Эффект наведения на неактивные (соседние) карточки — чтобы было видно, что они кликабельные */
-.card.near:hover {
-  opacity: 0.8;
-  transform: scale(0.85) !important;
-  cursor: pointer;
-}
-
-/* Общий эффект для любой карточки при наведении (если захочешь подсветить даже неактивные) */
-.card:hover:not(.active) {
-  opacity: 0.6;
-  cursor: pointer;
-}
-
-
-/* Подсветка активной карточки в списке выбранных */
-.remove-row.selected-row {
-  background-color: #fff8e1;
-  border-left: 4px solid var(--accent);
-}
-
-
-#result-area {
-  background: #ffffff;
-  padding: 32px;
-  border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-  margin-top: 50px;
-}
-
-#selected-list {
-  list-style: none;
-  padding: 0;
-  margin: 24px 0;
-}
-
-#selected-list li {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 14px 0;
-  border-bottom: 1px solid #f0f2f5;
-}
-
-/* Текст названия карточки — крупнее и жирнее */
-.selected-title {
-  font-weight: 700;
+  justify-content: center;
   color: #2c3e50;
-  font-size: 1rem;
-  line-height: 1.3;
-  margin-bottom: 4px;
 }
 
-/* Описание карточки — серым и поменьше */
-.selected-text {
-  color: #6b7280;
-  font-size: 0.9rem;
-  line-height: 1.4;
+.prev {
+  left: 20px;
 }
 
-/* Кнопка «Удалить» — компактная и аккуратная */
-.remove-btn {
-  background: none;
-  border: none;
-  color: #ef4444;
-  cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 600;
-  padding: 8px 12px;
-  border-radius: 6px;
-  transition: background 0.2s, color 0.2s;
-  margin-left: 10px;
-  align-self: flex-start;
+.next {
+  right: 20px;
 }
 
-.remove-btn:hover {
-  background: #fee2e2;
-  color: #b91c1c;
+/* Размер стрелки внутри кнопки */
+.nav-btn .arrow {
+  display: block;
+  width: 100%;
+  height: 100%;
+  line-height: 1;
+  font-size: 28px; /* размер символа на ПК */
+  text-align: center;
 }
 
-/* Если хочешь, чтобы у каждого пункта была маленькая цветная точка слева */
-#selected-list li::before {
-  content: "•";
-  color: #3498db;
-  font-size: 1.2rem;
-  margin-right: 12px;
-  margin-top: 18px; /* подстройка под высоту строки */
+.nav-btn:hover {
+  background: #ffffff;
+  transform: translateY(-50%) scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
 
-body {
-  overflow-x: hidden;       /* Запрещает горизонтальный скролл */
-  margin: 0;                 /* Убирает стандартные отступы браузера */
-  padding: 0;
-}
-
-/* На всякий случай — если какой-то блок всё-таки пытается вылезти */
-* {
-  box-sizing: border-box;
-}
-
-@media (max-width: 600px) {
-  .card {
-    padding: 24px 16px;        /* Меньше отступов на телефоне */
-    max-width: 100%;          /* На телефоне карточка может быть на всю ширину */
-  }
-
-  .card.active {
-    padding: 32px 20px;
-  }
-
-  .card h3 {
-    font-size: 2rem;          /* Достаточно крупный, но влезает */
-    margin-bottom: 20px;
-  }
-
-  .card p {
-    font-size: 1.1rem;         /* Комфортный размер на экране телефона */
-    line-height: 1.5;
-    max-width: 100%;           /* На телефоне строки могут быть чуть длиннее */
-  }
-
-  .hero-section {
-    height: 360px;             /* Чуть ниже шапка на телефоне */
-  }
-}
-
-
-
-@media (max-width: 600px) {
+/* Адаптив: на мобильных кнопки крупнее и ближе к краю */
+@media (max-width: 768px) {
   .nav-btn {
-    padding: 12px 18px;
-    font-size: 22px;
+    width: 64px;
+    height: 64px;
     left: 10px !important;
     right: 10px !important;
+  }
+
+  .nav-btn .arrow {
+    font-size: 32px; /* стрелка ещё крупнее на телефоне */
   }
 }
 
@@ -583,124 +309,127 @@ body {
   </style>
 </head>
 <body>
-<div class="hero-section">
-  <div class="hero-bg">
-    <!-- Ссылка на фото прямо здесь, в src -->
-    <img src="hero-bg.jpg" alt="фон для урока" onerror="console.log('Картинка не найдена'); this.style.opacity=0.3; this.border='2px dashed red';">
-  </div>
-  <div class="hero-overlay"></div>
-  <div class="hero-content">
-    <h1 class="hero-title">Методический конструктор</h1>
-    <p class="hero-subtitle">Комбинированных уроков географии</p>
-  </div>
-</div>
-
-
-
-<!-- Инструкция -->
-<div class="instruction-box">
-  <h3>Инструкция по использованию</h3>
-  <div class="steps-grid">
-    <div class="step-card">
-      <h4>Контекст</h4>
-      <p>Подумайте, какие цели урока вы хотели бы достичь. Какие условия урока предполагаются (от технических до индивидуальных особенностей класса).</p>
+  <div class="hero-section">
+    <div class="hero-bg">
+      <img src="hero-bg.jpg" alt="фон для урока" onerror="this.style.opacity=0.3; this.style.border='2px dashed red'; console.log('Картинка не найдена');">
     </div>
-    <div class="step-card">
-      <h4>Конструирование</h4>
-      <p>Определите с помощью каруселей ниже методические приёмы для каждого этапа урока в зависимости от вашего контекста. Выпишите получившуюся структуру в технологическую карту или конспект урока.</p>
-    </div>
-    <div class="step-card">
-      <h4>Подготовка</h4>
-      <p>Адаптируйте приёмы под ваш учебный материал. Заранее предположите, как обучающиеся будут работать с данным приёмом: индивидуально, в парах, в малой группе или всем классом; какое количество времени вы планируете использовать. Подготовьте раздаточный материал.</p>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">Методический конструктор</h1>
+      <p class="hero-subtitle">Комбинированных уроков географии</p>
     </div>
   </div>
+
+  <div class="instruction-box">
+    <h3>Инструкция по использованию</h3>
+    <div class="steps-grid">
+      <div class="step-card">
+        <h4>Контекст</h4>
+        <p>Подумайте, какие цели урока вы хотели бы достичь. Какие условия урока предполагаются (от технических до индивидуальных особенностей класса).</p>
+      </div>
+      <div class="step-card">
+        <h4>Конструирование</h4>
+        <p>Определите с помощью каруселей ниже методические приёмы для каждого этапа урока в зависимости от вашего контекста. Выпишите получившуюся структуру в технологическую карту или конспект урока.</p>
+      </div>
+      <div class="step-card">
+        <h4>Подготовка</h4>
+        <p>Адаптируйте приёмы под ваш учебный материал. Заранее предположите, как обучающиеся будут работать с данным приёмом: индивидуально, в парах, в малой группе или всем классом; какое количество времени вы планируете использовать. Подготовьте раздаточный материал.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="all-carousels-wrapper">
+    <!-- 9 каруселей -->
+    <div class="single-carousel-block"> <div id="carousel-1" class="full-screen-carousel"></div> </div>
+    <div class="single-carousel-block"> <div id="carousel-2" class="full-screen-carousel"></div> </div>
+    <div class="single-carousel-block"> <div id="carousel-3" class="full-screen-carousel"></div> </div>
+    <div class="single-carousel-block"> <div id="carousel-4" class="full-screen-carousel"></div> </div>
+    <div class="single-carousel-block"> <div id="carousel-5" class="full-screen-carousel"></div> </div>
+    <div class="single-carousel-block"> <div id="carousel-6" class="full-screen-carousel"></div> </div>
+    <div class="single-carousel-block"> <div id="carousel-7" class="full-screen-carousel"></div> </div>
+    <div class="single-carousel-block"> <div id="carousel-8" class="full-screen-carousel"></div> </div>
+    <div class="single-carousel-block"> <div id="carousel-9" class="full-screen-carousel"></div> </div>
+  </div>
+
+  <!-- Нижний блок выбранных карточек -->
+  <div id="result-area">
+    <h3>Выбранные приёмы (по одному на этап)</h3>
+    <ul id="selected-list"></ul>
+    <div class="export-controls">
+  <label for="export-format">Формат экспорта:</label>
+  <select id="export-format">
+    <option value="txt">TXT (простой текст)</option>
+    <option value="csv">CSV (для Excel)</option>
+    <option value="json">JSON (для программ)</option>
+  </select>
+  <button id="download-btn" type="button">Скачать список</button>
 </div>
-<!-- Родитель для всех 9 каруселей -->
-<div id="all-carousels-wrapper">
-  <div class="single-carousel-block">
-    <div id="carousel-1" class="full-screen-carousel"></div>
-  </div>
-  <div class="single-carousel-block">
-    <div id="carousel-2" class="full-screen-carousel"></div>
-  </div>
-  <div class="single-carousel-block">
-    <div id="carousel-3" class="full-screen-carousel"></div>
-  </div>
-  <div class="single-carousel-block">
-    <div id="carousel-4" class="full-screen-carousel"></div>
-  </div>
-  <div class="single-carousel-block">
-    <div id="carousel-5" class="full-screen-carousel"></div>
-  </div>
-  <div class="single-carousel-block">
-    <div id="carousel-6" class="full-screen-carousel"></div>
-  </div>
-  <div class="single-carousel-block">
-    <div id="carousel-7" class="full-screen-carousel"></div>
-  </div>
-  <div class="single-carousel-block">
-    <div id="carousel-8" class="full-screen-carousel"></div>
-  </div>
-  <div class="single-carousel-block">
-    <div id="carousel-9" class="full-screen-carousel"></div>
-  </div>
-</div>
 
-
-
+  </div>
+</body>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
 
-function updateSelectedList() {
-  const checkboxes = document.querySelectorAll('.select-checkbox:checked');
-  const list = document.getElementById('selected-list');
-  if (!list) return;
+  // --- ГЛАВНАЯ ЛОГИКА: одна карточка на карусель ---
+  function selectOnlyOneInCarousel(checkbox) {
+    const carouselContainer = checkbox.closest('.full-screen-carousel');
+    if (!carouselContainer) return;
 
-  list.innerHTML = '';
+    // Снимаем выделение со всех чекбоксов в этой карусели
+    const allCheckboxes = carouselContainer.querySelectorAll('.select-checkbox');
+    allCheckboxes.forEach(cb => {
+      if (cb !== checkbox) {
+        cb.checked = false;
+      }
+    });
 
-  if (checkboxes.length === 0) {
-    list.innerHTML = '<span style="color:#999; font-style:italic; padding: 16px; display:block;">Пока ничего не выбрано</span>';
-    return;
+    updateSelectedList();
   }
 
+  function updateSelectedList() {
+    const list = document.getElementById('selected-list');
+    if (!list) return;
+    list.innerHTML = '';
 
+    const carousels = document.querySelectorAll('.full-screen-carousel');
+    let hasAny = false;
 
-  checkboxes.forEach(cb => {
-    const row = document.createElement('div');
-    row.className = 'remove-row';
+    carousels.forEach(carousel => {
+      const checked = carousel.querySelector('.select-checkbox:checked');
+      if (!checked) return;
+      hasAny = true;
 
-    // Если эта карточка сейчас активная в карусели — подсвечиваем строку
-    if (cb.closest('.card').classList.contains('active')) {
-      row.classList.add('selected-row');
+      const li = document.createElement('li');
+
+      const title = document.createElement('div');
+      title.className = 'selected-title';
+      title.textContent = checked.getAttribute('data-title');
+
+      const text = document.createElement('div');
+      text.className = 'selected-text';
+      text.textContent = checked.getAttribute('data-text');
+
+      const btnRemove = document.createElement('button');
+      btnRemove.className = 'remove-btn';
+      btnRemove.textContent = 'Удалить';
+      btnRemove.type = 'button';
+      btnRemove.onclick = () => {
+        checked.checked = false;
+        updateSelectedList();
+      };
+
+      li.appendChild(title);
+      li.appendChild(text);
+      li.appendChild(btnRemove);
+      list.appendChild(li);
+    });
+
+    if (!hasAny) {
+      list.innerHTML = '<span style="color:#999; font-style:italic; padding: 16px; display:block;">Пока ничего не выбрано</span>';
     }
+  }
 
-    const info = document.createElement('span');
-    info.style.cssText = 'display:flex; flex-direction:column; gap:2px;';
-    info.innerHTML = `
-      <strong>${cb.getAttribute('data-title')}</strong>
-      <span style="font-size:0.85rem; color:#666;">${cb.getAttribute('data-text')}</span>
-    `;
-
-    const btnRemove = document.createElement('button');
-    btnRemove.className = 'remove-btn';
-    btnRemove.textContent = 'Удалить';
-    btnRemove.title = 'Убрать из списка';
-    btnRemove.onclick = () => {
-      cb.checked = false;
-      updateSelectedList();
-    };
-
-    row.appendChild(info);
-    row.appendChild(btnRemove);
-    list.appendChild(row);
-  });
-}
-
-
-
-  // Сдвиг трека так, чтобы карточка с индексом index оказалась по центру.
-  // offsetLeft — координата раскладки, scale на неё не влияет, поэтому ошибки не накапливаются.
   function centerCard(container, track, card) {
     const containerWidth = container.clientWidth;
     const cardCenter = card.offsetLeft + card.offsetWidth / 2;
@@ -715,20 +444,25 @@ function updateSelectedList() {
 
     let current = cards.findIndex(c => c.classList.contains('active'));
     if (current === -1) current = 0;
-    const next = Math.min(Math.max(current + direction, 0), cards.length - 1);
-    if (next === current) return; // края — ничего не делаем
 
-    // Переключаем классы: активная, соседние чуть видны, остальные почти невидимы
+    const next = Math.min(Math.max(current + direction, 0), cards.length - 1);
+    if (next === current) return;
+
     cards.forEach((c, i) => {
       c.classList.remove('active', 'near');
-      if (i === next) c.classList.add('active');
-      else if (i === next - 1 || i === next + 1) c.classList.add('near');
+      if (i === next) {
+        c.classList.add('active');
+      } else if (i === next - 1 || i === next + 1) {
+        c.classList.add('near');
+      }
     });
 
     centerCard(container, track, cards[next]);
+    updateSelectedList();
   }
 
-  const allStages = {
+  
+ const allStages = {
     'carousel-1': [
       { title: 'Этап 1. Приветствие', text: '' },
       { title: 'Улыбка', text: 'Деление на группы происходит перед входом в аудиторию, когда каждый участнинк выбирает себе улыбку определённого вида. После этого каждая группа приветствует остальных учеников' },
@@ -808,279 +542,152 @@ function updateSelectedList() {
     ]
   };
 
-  Object.keys(allStages).forEach(key => {
-    const container = document.getElementById(key);
-    if (!container) return;
+  function initCarousels() {
+    Object.keys(allStages).forEach(carouselId => {
+      const container = document.getElementById(carouselId);
+      const track = document.createElement('div');
+      track.className = 'carousel-track';
+      container.appendChild(track);
 
-    const items = allStages[key];
-    const track = document.createElement('div');
-    track.className = 'carousel-track';
+      const items = allStages[carouselId];
+      items.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = `card ${index === 0 ? 'active' : ''}`;
+        if (index > 0 && index < items.length - 1) {
+          card.classList.add('near');
+        }
 
-    items.forEach((item, idx) => {
-  const card = document.createElement('div');
-  // Первая карточка сразу получает active
-  card.className = (idx === 0) ? 'card active' : 'card';
+        // Чекбокс «Отметить» — показываем только НЕ на первой карточке
+        if (index !== 0) {
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.className = 'select-checkbox';
+          checkbox.setAttribute('data-title', item.title);
+          checkbox.setAttribute('data-text', item.text);
 
-  // Создаём чекбокс всегда — чтобы скрипты не ломались, если ищут .select-checkbox
-  const cb = document.createElement('input');
-  cb.type = 'checkbox';
-  cb.classList.add('select-checkbox');
-  cb.setAttribute('data-title', item.title);
-  cb.setAttribute('data-text', item.text);
-  cb.addEventListener('change', updateSelectedList);
-  cb.id = `cb-${key}-${idx}`;
+          checkbox.addEventListener('change', () => {
+            selectOnlyOneInCarousel(checkbox);
+          });
+          const labelText = document.createElement('span');
+          labelText.className = 'label-text';
+          labelText.textContent = 'Отметить';
 
-  const labelWrapper = document.createElement('div');
-  labelWrapper.className = 'card-label-wrapper';
+          // Клик по тексту тоже переключает чекбокс
+          labelText.addEventListener('click', (e) => {
+            e.preventDefault();
+            checkbox.checked = !checkbox.checked;
+            selectOnlyOneInCarousel(checkbox);
+          });
 
-  const labelText = document.createElement('label');
-  labelText.className = 'label-text';
-  labelText.textContent = 'Отметить';
-  labelText.htmlFor = `cb-${key}-${idx}`;
+          const labelWrapper = document.createElement('div');
+          labelWrapper.className = 'card-label-wrapper';
+          labelWrapper.appendChild(checkbox);
+          labelWrapper.appendChild(labelText);
+          card.appendChild(labelWrapper);
+        }
 
-  labelWrapper.appendChild(cb);
-  labelWrapper.appendChild(labelText);
+        // Контент карточки (заголовок и текст)
+        const title = document.createElement('h3');
+        title.textContent = item.title;
 
-  // ГЛАВНОЕ ИЗМЕНЕНИЕ: для первой карточки скрываем блок
-  if (idx === 0) {
-    labelWrapper.style.display = 'none';      // не видно на экране
-    cb.disabled = true;                      // на всякий случай запрещаем взаимодействие
+        const text = document.createElement('p');
+        text.textContent = item.text;
+
+        card.appendChild(title);
+        card.appendChild(text);
+
+        track.appendChild(card);
+      });
+
+      // Кнопки навигации
+      const prevBtn = document.createElement('button');
+prevBtn.className = 'nav-btn prev';
+prevBtn.type = 'button';
+prevBtn.innerHTML = '<span class="arrow">&#10094;</span>';
+prevBtn.addEventListener('click', () => moveCarousel(carouselId, -1));
+
+const nextBtn = document.createElement('button');
+nextBtn.className = 'nav-btn next';
+nextBtn.type = 'button';
+nextBtn.innerHTML = '<span class="arrow">&#10095;</span>';
+nextBtn.addEventListener('click', () => moveCarousel(carouselId, 1));
+
+      container.appendChild(prevBtn);
+      container.appendChild(nextBtn);
+
+      // Центрируем первую карточку при инициализации
+      const firstCard = track.querySelector('.card.active');
+      if (firstCard) {
+        centerCard(container, track, firstCard);
+      }
+    });
   }
 
-  const content = document.createElement('div');
-  content.innerHTML = `<h3>${item.title}</h3><p>${item.text}</p>`;
+  initCarousels();
 
-  card.appendChild(labelWrapper);
-  card.appendChild(content);
-  track.appendChild(card);
-});
+    function exportSelected() {
+    const list = document.getElementById('selected-list');
+    const format = document.getElementById('export-format').value;
+    const items = Array.from(list.querySelectorAll('li'));
 
-container.appendChild(track);
-
-
-    // Сразу центрируем первую карточку при загрузке
-    centerCard(container, track, track.querySelector('.card.active'));
-
-    // Стрелки
-    const prevBtn = document.createElement('button');
-    prevBtn.className = 'nav-btn prev';
-    prevBtn.innerHTML = '&#10094;';
-    prevBtn.onclick = () => moveCarousel(key, -1);
-
-    const nextBtn = document.createElement('button');
-    nextBtn.className = 'nav-btn next';
-    nextBtn.innerHTML = '&#10095;';
-    nextBtn.onclick = () => moveCarousel(key, 1);
-
-    container.appendChild(prevBtn);
-    container.appendChild(nextBtn);
-  });
-
-  // Панель внизу — как была
-  const panelContainer = document.getElementById('selection-panel');
-  if (!panelContainer) return;
-
-  panelContainer.style.cssText = `
-    width: 100%; max-width: 1000px; margin: 40px auto 0; background: #fff;
-    border: 1px solid #ddd; border-radius: 12px; padding: 24px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  `;
-
-  const title = document.createElement('h3');
-  title.textContent = 'Выбранные карточки';
-  panelContainer.appendChild(title);
-
-  const formatSelect = document.createElement('select');
-  formatSelect.id = 'download-format';
-  formatSelect.style.cssText = 'padding: 8px; margin-right: 10px; border-radius: 6px; border: 1px solid #ccc;';
-  [
-    { val: 'txt', txt: 'TXT (простой текст)' },
-    { val: 'csv', txt: 'CSV (для Excel)' },
-    { val: 'md', txt: 'MD (для Notion)' },
-    { val: 'json', txt: 'JSON (для программ)' }
-  ].forEach(opt => {
-    const option = document.createElement('option');
-    option.value = opt.val;
-    option.textContent = opt.txt;
-    formatSelect.appendChild(option);
-  });
-  panelContainer.appendChild(formatSelect);
-
-  const btnDownload = document.createElement('button');
-  btnDownload.id = 'btn-download';
-  btnDownload.textContent = 'Скачать список';
-  btnDownload.style.cssText = 'padding: 8px 16px; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer;';
-  panelContainer.appendChild(btnDownload);
-
-  const selectedList = document.createElement('div');
-  selectedList.id = 'selected-list';
-  selectedList.style.marginTop = '20px';
-  panelContainer.appendChild(selectedList);
-
-  btnDownload.addEventListener('click', () => {
-    const checkboxes = document.querySelectorAll('.select-checkbox:checked');
-    if (checkboxes.length === 0) { alert('Сначала отметьте карточки галочками!'); return; }
-
-    const format = document.getElementById('download-format').value;
-    let content = '', mime = '', ext = '';
-
-    if (format === 'txt') {
-      checkboxes.forEach(cb => {
-        content += `- ${cb.getAttribute('data-title')}\n  ${cb.getAttribute('data-text')}\n\n`;
-      });
-      mime = 'text/plain'; ext = '.txt';
-    }     else if (format === 'csv') {
-      content = 'title;text\n';
-      checkboxes.forEach(cb => {
-        const title = cb.getAttribute('data-title').replace(/"/g, '""');
-        const text = cb.getAttribute('data-text').replace(/"/g, '""');
-        content += `"${title}";"${text}"\n`;
-      });
-      content = '\ufeff' + content; // BOM — чтобы Excel понял, что это UTF-8
-      mime = 'text/csv;charset=utf-8';
-      ext = '.csv';
-    } else if (format === 'md') {
-      content = '# Выбранные карточки\n\n';
-      checkboxes.forEach(cb => {
-        content += `- **${cb.getAttribute('data-title')}**\n  ${cb.getAttribute('data-text')}\n\n`;
-      });
-      mime = 'text/markdown'; ext = '.md';
-    } else if (format === 'json') {
-      const data = Array.from(checkboxes).map(cb => ({
-        title: cb.getAttribute('data-title'),
-        text: cb.getAttribute('data-text')
-      }));
-      content = JSON.stringify(data, null, 2);
-      mime = 'application/json'; ext = '.json';
+    if (items.length === 0 || items[0].textContent.includes('Пока ничего не выбрано')) {
+      alert('Сначала выберите приёмы в каруселях.');
+      return;
     }
 
-    const blob = new Blob([content], { type: mime });
+    let content = '';
+
+    const data = [];
+    items.forEach(li => {
+      const title = li.querySelector('.selected-title')?.textContent || '';
+      const text = li.querySelector('.selected-text')?.textContent || '';
+      data.push({ title, text });
+    });
+
+    switch (format) {
+      case 'txt':
+        content = data.map(({ title, text }) => {
+          return `${title}\n${text}\n`.trim();
+        }).join('\n\n');
+        downloadFile(content, 'selected-methods.txt', 'text/plain');
+        break;
+
+      case 'csv':
+        const csvRows = [['Приём', 'Описание']];
+        data.forEach(({ title, text }) => {
+          const cleanTitle = title.replace(/"/g, '""');
+          const cleanText = text.replace(/"/g, '""').replace(/\n/g, ' ');
+          csvRows.push([`"${cleanTitle}"`, `"${cleanText}"`]);
+        });
+        content = csvRows.map(row => row.join(',')).join('\n');
+        downloadFile(content, 'selected-methods.csv', 'text/csv');
+        break;
+
+      case 'json':
+        content = JSON.stringify(data, null, 2);
+        downloadFile(content, 'selected-methods.json', 'application/json');
+        break;
+    }
+  }
+
+  function downloadFile(content, filename, mimeType) {
+    const blob = new Blob([content], { type: mimeType });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'selected-methods' + ext;
+    a.download = filename;
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  });
-
-  updateSelectedList();
-});
-
-
-
-// 2. ТОЛЬКО ПОСЛЕ ЭТОГО запускаем показ соседей
-document.addEventListener('DOMContentLoaded', () => {
-  const cards = Array.from(document.querySelectorAll('.card'));
-  if (cards.length > 0) cards[0].classList.add('active');
-  if (cards.length > 1) cards[1].classList.add('near');
-});
-
-
-document.addEventListener('DOMContentLoaded', () => {
-  // Находим все контейнеры каруселей (подбери селектор под свой класс, если у тебя не .full-screen-carousel)
-  const carousels = document.querySelectorAll('.full-screen-carousel');
-
-  carousels.forEach(carousel => {
-    const cards = Array.from(carousel.querySelectorAll('.card'));
-    if (cards.length === 0) return;
-
-    // 1. Делаем первую карточку активной
-    cards[0].classList.add('active');
-
-    // 2. Сразу показываем вторую карточку как соседа
-    if (cards[1]) {
-      cards[1].classList.add('near');
-    }
-  });
-
-  // --- Дальше тот же самый умный код, который обновляет соседей при кликах ---
-  function updateNeighborsForAllCarousels() {
-    document.querySelectorAll('.full-screen-carousel').forEach(carousel => {
-      const cards = Array.from(carousel.querySelectorAll('.card'));
-      const active = carousel.querySelector('.card.active');
-      if (!active) return;
-
-      const idx = cards.indexOf(active);
-
-      // Сбрасываем near у всех карточек внутри этой карусели
-      cards.forEach(c => c.classList.remove('near'));
-
-      // Ставим near соседям
-      if (idx > 0) cards[idx - 1].classList.add('near');
-      if (idx < cards.length - 1) cards[idx + 1].classList.add('near');
-    });
   }
 
-  // Обновляем соседей при клике на кнопки (ищем любые кнопки с классами prev/next/nav-btn)
-  document.querySelectorAll('.prev, .next, .nav-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      setTimeout(updateNeighborsForAllCarousels, 50);
-    });
-  });
-});
-
-
-
-
-
-document.addEventListener('DOMContentLoaded', () => {
-  const carousels = document.querySelectorAll('.full-screen-carousel');
-
-  carousels.forEach(carousel => {
-    const checkboxes = carousel.querySelectorAll('.select-checkbox');
-
-    checkboxes.forEach(cb => {
-      cb.addEventListener('click', (e) => {
-        // Если кликнули по уже отмеченной — она просто снимется (стандартное поведение)
-        if (cb.checked) {
-          // Перед тем как браузер сделает своё, принудительно снимаем все остальные
-          checkboxes.forEach(other => {
-            if (other !== cb) {
-              other.checked = false;
-              const card = other.closest('.card');
-              if (card) {
-                card.classList.remove('selected');
-                // Если у тебя есть какой-то свой класс выделения — тоже убери его
-              }
-            }
-          });
-        }
-        // Если сняли галочку с единственной — можно дополнительно сбросить класс у карточки
-        else {
-          const card = cb.closest('.card');
-          if (card) card.classList.remove('selected');
-        }
-      });
-    });
-  });
-
-// В конце DOMContentLoaded, после создания всех каруселей
-requestAnimationFrame(() => {
-  document.querySelectorAll('.full-screen-carousel').forEach(container => {
-    const track = container.querySelector('.carousel-track');
-    const active = container.querySelector('.card.active');
-    if (active) {
-      const containerWidth = container.clientWidth;
-      const cardCenter = active.offsetLeft + active.offsetWidth / 2;
-      const shift = cardCenter - containerWidth / 2;
-      track.style.transform = `translateX(${-shift}px)`;
-    }
-  });
-});
-
-
+  const downloadBtn = document.getElementById('download-btn');
+  if (downloadBtn) {
+    downloadBtn.addEventListener('click', exportSelected);
+  }
 
 });
-
-
-
-
 </script>
-
-<div style="height: 60px;"></div>
-<div id="selection-panel"></div>
-
-
-
 </body>
 </html>
