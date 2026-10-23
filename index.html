@@ -13,16 +13,19 @@
       --card-bg: #ffffff;
     }
 
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden; /* запрещает горизонтальный скролл всей страницы */
+    }
+
     body {
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
       background: #f4f6f9;
       color: #333;
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden; /* запрет горизонтальной прокрутки страницы */
     }
-
-    * { box-sizing: border-box; }
 
     /* Герой-блок */
     .hero-section {
@@ -95,7 +98,7 @@
 
     /* Карусель */
     .full-screen-carousel {
-      position: relative; width: 100%; min-height: 520px; /* фиксируем высоту, чтобы не схлопывалось */
+      position: relative; width: 100%; min-height: 520px;
       overflow: hidden; padding: 0 20px; box-sizing: border-box;
     }
     .carousel-track {
@@ -141,6 +144,7 @@
     .card h3 {
       margin: 0 0 28px 0; font-size: 3.6rem; line-height: 1.05; color: #1a3b5a;
       text-align: center; font-weight: 700;
+      overflow-wrap: break-word; word-wrap: break-word;
     }
     .card p {
       margin: 0; color: #555; font-size: 1.5rem; line-height: 1.45;
@@ -151,11 +155,32 @@
     /* Навигация */
     .nav-btn {
       position: absolute; top: 50%; transform: translateY(-50%);
-      background: rgba(255,255,255,0.9); border: none; cursor: pointer; z-index: 20;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2); color: #333;
+      width: 48px; height: 48px;
+      background: rgba(255, 255, 255, 0.95);
+      border: none; cursor: pointer; z-index: 30;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: #2c3e50;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
     .prev { left: 20px; }
     .next { right: 20px; }
+
+    .nav-btn .arrow {
+      display: block;
+      line-height: 1;
+      font-size: 28px;
+      text-align: center;
+      pointer-events: none; /* клик всегда попадает в кнопку, а не в стрелку */
+    }
+
+    .nav-btn:hover {
+      background: #ffffff;
+      transform: translateY(-50%) scale(1.05);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
 
     /* Нижний блок выбранных карточек */
     #result-area {
@@ -190,122 +215,93 @@
     }
     .card.near:hover { opacity: 0.8; transform: scale(0.85) !important; cursor: pointer; }
 
-    /* --- МОБИЛЬНЫЕ СТИЛИ --- */
+    /* Экспорт */
+    .export-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 16px;
+      padding: 12px 0;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    #export-format {
+      padding: 8px 12px;
+      font-size: 0.95rem;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      background: #fff;
+    }
+
+    #download-btn {
+      padding: 8px 20px;
+      font-weight: 600;
+      color: #fff;
+      background-color: var(--accent);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    #download-btn:hover {
+      background-color: #2980b9;
+    }
+
+    #download-btn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    /* --- МОБИЛЬНЫЕ СТИЛИ (только тут меняется вид) --- */
     @media (max-width: 1024px) {
-      .card { width: 100%; min-width: auto; max-width: none; padding: 20px 16px; border-radius: 16px; }
+      .card {
+        width: calc(100vw - 40px);
+        min-width: calc(100vw - 40px);
+        max-width: calc(100vw - 40px);
+        padding: 24px 16px; border-radius: 16px;
+      }
       .card.active { padding: 32px 20px; }
     }
+
     @media (max-width: 768px) {
-      .card { min-width: 95vw; height: 80vh; padding: 20px; }
-      .card.active { transform: scale(0.98); padding: 24px 16px; }
-      .card h3 { font-size: 2rem; margin-bottom: 20px; }
-      .card p { font-size: 1.1rem; line-height: 1.5; padding: 0 4px; }
-      .hero-section { height: 360px; }
-      .nav-btn {
-        padding: 12px 18px; font-size: 22px; left: 10px !important; right: 10px !important;
-        border-radius: 12px;
+      .full-screen-carousel {
+        padding: 0 8px; /* минимум по бокам, чтобы карточка не упиралась в край */
+        min-height: 460px;
       }
-    }
-    @media (max-width: 600px) {
-      .card h3 { font-size: 1.6rem; text-align: left; }
+      .card {
+        width: calc(100vw - 16px);
+        min-width: calc(100vw - 16px);
+        max-width: calc(100vw - 16px);
+        height: auto; min-height: 70vh;
+        padding: 28px 14px;
+      }
+      .card.active { transform: scale(1); padding: 32px 18px; }
+      .card h3 { font-size: 1.6rem; margin-bottom: 16px; }
       .card p { font-size: 1rem; line-height: 1.5; }
-      .nav-btn { padding: 10px 14px; font-size: 20px; }
+      .hero-section { height: 360px; }
+      .hero-title { font-size: 1.8rem; }
+      .instruction-box { margin-left: 12px; margin-right: 12px; padding: 24px 18px; }
+      #result-area { margin-left: 12px; margin-right: 12px; padding: 24px 18px; }
+
+      /* Стрелки: круглые, крупные, по центру, не обрезаются */
+      .nav-btn {
+        width: 56px;
+        height: 56px;
+        top: 50%;
+      }
+      .prev { left: 8px; }
+      .next { right: 8px; }
+      .nav-btn .arrow { font-size: 30px; }
+
+      .export-controls { flex-wrap: wrap; }
     }
 
-.export-controls {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 16px;
-  padding: 12px 0;
-  border-top: 1px solid #e5e7eb;
-}
-
-#export-format {
-  padding: 8px 12px;
-  font-size: 0.95rem;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  background: #fff;
-}
-
-#download-btn {
-  padding: 8px 20px;
-  font-weight: 600;
-  color: #fff;
-  background-color: var(--accent);
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-#download-btn:hover {
-  background-color: #2980b9;
-}
-
-#download-btn:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-
-
-.nav-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.95);
-  border: none;
-  cursor: pointer;
-  z-index: 30;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  border-radius: 50%; /* делает кнопку круглой */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #2c3e50;
-}
-
-.prev {
-  left: 20px;
-}
-
-.next {
-  right: 20px;
-}
-
-/* Размер стрелки внутри кнопки */
-.nav-btn .arrow {
-  display: block;
-  width: 100%;
-  height: 100%;
-  line-height: 1;
-  font-size: 28px; /* размер символа на ПК */
-  text-align: center;
-}
-
-.nav-btn:hover {
-  background: #ffffff;
-  transform: translateY(-50%) scale(1.05);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-}
-
-/* Адаптив: на мобильных кнопки крупнее и ближе к краю */
-@media (max-width: 768px) {
-  .nav-btn {
-    width: 64px;
-    height: 64px;
-    left: 10px !important;
-    right: 10px !important;
-  }
-
-  .nav-btn .arrow {
-    font-size: 32px; /* стрелка ещё крупнее на телефоне */
-  }
-}
-
-
+    @media (max-width: 400px) {
+      .card h3 { font-size: 1.4rem; }
+      .nav-btn { width: 50px; height: 50px; }
+      .nav-btn .arrow { font-size: 26px; }
+    }
   </style>
 </head>
 <body>
@@ -356,17 +352,15 @@
     <h3>Выбранные приёмы (по одному на этап)</h3>
     <ul id="selected-list"></ul>
     <div class="export-controls">
-  <label for="export-format">Формат экспорта:</label>
-  <select id="export-format">
-    <option value="txt">TXT (простой текст)</option>
-    <option value="csv">CSV (для Excel)</option>
-    <option value="json">JSON (для программ)</option>
-  </select>
-  <button id="download-btn" type="button">Скачать список</button>
-</div>
-
+      <label for="export-format">Формат экспорта:</label>
+      <select id="export-format">
+        <option value="txt">TXT (простой текст)</option>
+        <option value="csv">CSV (для Excel)</option>
+        <option value="json">JSON (для программ)</option>
+      </select>
+      <button id="download-btn" type="button">Скачать список</button>
+    </div>
   </div>
-</body>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -461,8 +455,16 @@ document.addEventListener('DOMContentLoaded', () => {
     updateSelectedList();
   }
 
-  
- const allStages = {
+  // При повороте телефона / изменении размера окна — пересобираем центрирование
+  window.addEventListener('resize', () => {
+    document.querySelectorAll('.full-screen-carousel').forEach(container => {
+      const track = container.querySelector('.carousel-track');
+      const active = track ? track.querySelector('.card.active') : null;
+      if (active) centerCard(container, track, active);
+    });
+  });
+
+  const allStages = {
     'carousel-1': [
       { title: 'Этап 1. Приветствие', text: '' },
       { title: 'Улыбка', text: 'Деление на группы происходит перед входом в аудиторию, когда каждый участнинк выбирает себе улыбку определённого вида. После этого каждая группа приветствует остальных учеников' },
@@ -601,16 +603,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Кнопки навигации
       const prevBtn = document.createElement('button');
-prevBtn.className = 'nav-btn prev';
-prevBtn.type = 'button';
-prevBtn.innerHTML = '<span class="arrow">&#10094;</span>';
-prevBtn.addEventListener('click', () => moveCarousel(carouselId, -1));
+      prevBtn.className = 'nav-btn prev';
+      prevBtn.type = 'button';
+      prevBtn.innerHTML = '<span class="arrow">&#10094;</span>';
+      prevBtn.addEventListener('click', () => moveCarousel(carouselId, -1));
 
-const nextBtn = document.createElement('button');
-nextBtn.className = 'nav-btn next';
-nextBtn.type = 'button';
-nextBtn.innerHTML = '<span class="arrow">&#10095;</span>';
-nextBtn.addEventListener('click', () => moveCarousel(carouselId, 1));
+      const nextBtn = document.createElement('button');
+      nextBtn.className = 'nav-btn next';
+      nextBtn.type = 'button';
+      nextBtn.innerHTML = '<span class="arrow">&#10095;</span>';
+      nextBtn.addEventListener('click', () => moveCarousel(carouselId, 1));
 
       container.appendChild(prevBtn);
       container.appendChild(nextBtn);
@@ -625,7 +627,7 @@ nextBtn.addEventListener('click', () => moveCarousel(carouselId, 1));
 
   initCarousels();
 
-    function exportSelected() {
+  function exportSelected() {
     const list = document.getElementById('selected-list');
     const format = document.getElementById('export-format').value;
     const items = Array.from(list.querySelectorAll('li'));
