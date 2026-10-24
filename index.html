@@ -98,8 +98,10 @@
 
     /* Карусель */
     .full-screen-carousel {
-      position: relative; width: 100%; min-height: 520px;
-      overflow: hidden; padding: 0 20px; box-sizing: border-box;
+      position: relative; width: 100%; min-height: 560px;
+      overflow: hidden;
+      padding: 40px 20px; /* вертикальный запас, чтобы увеличенная карточка не обрезалась */
+      box-sizing: border-box;
     }
     .carousel-track {
       display: flex; flex-wrap: nowrap; gap: 20px;
@@ -123,6 +125,14 @@
     }
     .card.near {
       transform: scale(0.8); opacity: 0.35; z-index: 5;
+    }
+
+    /* Карточка с поставленной галочкой — эффект увеличения.
+       Убирается автоматически, когда галочку снимают (класс снимает JS). */
+    .card.active.selected {
+      transform: scale(1.02);
+      border-left-color: #1d7a4c;
+      box-shadow: 0 12px 24px rgba(29, 122, 76, 0.18);
     }
 
     /* Чекбокс и подпись «Отметить» */
@@ -176,10 +186,20 @@
       pointer-events: none; /* клик всегда попадает в кнопку, а не в стрелку */
     }
 
-    .nav-btn:hover {
-      background: #ffffff;
-      transform: translateY(-50%) scale(1.05);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    /* Эффекты наведения — только для устройств с мышкой,
+       чтобы на тач-экранах эффект не «залипал» */
+    @media (hover: hover) and (pointer: fine) {
+      .nav-btn:hover {
+        background: #ffffff;
+        transform: translateY(-50%) scale(1.05);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+      }
+      .card:hover:not(.active) { opacity: 0.6; cursor: pointer; }
+      .card.active:hover {
+        transform: scale(1.02) !important; box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+        z-index: 60; transition: transform 0.2s ease, box-shadow 0.3s ease;
+      }
+      .card.near:hover { opacity: 0.8; transform: scale(0.85) !important; cursor: pointer; }
     }
 
     /* Нижний блок выбранных карточек */
@@ -206,14 +226,6 @@
       border-radius: 6px; transition: background 0.2s, color 0.2s; margin-left: 10px;
     }
     .remove-btn:hover { background: #fee2e2; color: #b91c1c; }
-
-    /* Эффекты наведения */
-    .card:hover:not(.active) { opacity: 0.6; cursor: pointer; }
-    .card.active:hover {
-      transform: scale(1.03) !important; box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
-      z-index: 60; transition: transform 0.2s ease, box-shadow 0.3s ease;
-    }
-    .card.near:hover { opacity: 0.8; transform: scale(0.85) !important; cursor: pointer; }
 
     /* Экспорт */
     .export-controls {
@@ -266,19 +278,22 @@
 
     @media (max-width: 768px) {
       .full-screen-carousel {
-        padding: 0 8px; /* минимум по бокам, чтобы карточка не упиралась в край */
-        min-height: 460px;
+        padding: 24px 8px;  /* запас по вертикали для ховера */
+        min-height: 300px;  /* карточки стали горизонтальными — карусель ниже */
       }
       .card {
         width: calc(100vw - 16px);
         min-width: calc(100vw - 16px);
         max-width: calc(100vw - 16px);
-        height: auto; min-height: 70vh;
-        padding: 28px 14px;
+        height: auto;
+        min-height: 200px;   /* компактная «горизонтальная» карточка вместо высокой */
+        padding: 24px 64px;  /* боковые отступы — текст не под стрелками */
       }
-      .card.active { transform: scale(1); padding: 32px 18px; }
-      .card h3 { font-size: 1.6rem; margin-bottom: 16px; }
-      .card p { font-size: 1rem; line-height: 1.5; }
+      .card.active { transform: scale(1); padding: 28px 64px; }
+      .card.active.selected { transform: scale(1.01); }
+      .card h3 { font-size: 1.4rem; margin-bottom: 12px; }
+      .card p { font-size: 0.95rem; line-height: 1.5; }
+      .card::before { height: 24px; }
       .hero-section { height: 360px; }
       .hero-title { font-size: 1.8rem; }
       .instruction-box { margin-left: 12px; margin-right: 12px; padding: 24px 18px; }
@@ -298,7 +313,9 @@
     }
 
     @media (max-width: 400px) {
-      .card h3 { font-size: 1.4rem; }
+      .card h3 { font-size: 1.3rem; }
+      .card { padding: 20px 58px; }
+      .card.active { padding: 24px 58px; }
       .nav-btn { width: 50px; height: 50px; }
       .nav-btn .arrow { font-size: 26px; }
     }
@@ -366,6 +383,16 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   // --- ГЛАВНАЯ ЛОГИКА: одна карточка на карусель ---
+  function syncCheckedClass(checkbox) {
+    const card = checkbox.closest('.card');
+    if (!card) return;
+    if (checkbox.checked) {
+      card.classList.add('selected');
+    } else {
+      card.classList.remove('selected'); // снимаем эффект увеличения, если галочку убрали
+    }
+  }
+
   function selectOnlyOneInCarousel(checkbox) {
     const carouselContainer = checkbox.closest('.full-screen-carousel');
     if (!carouselContainer) return;
@@ -375,9 +402,11 @@ document.addEventListener('DOMContentLoaded', () => {
     allCheckboxes.forEach(cb => {
       if (cb !== checkbox) {
         cb.checked = false;
+        syncCheckedClass(cb);
       }
     });
 
+    syncCheckedClass(checkbox);
     updateSelectedList();
   }
 
@@ -410,6 +439,7 @@ document.addEventListener('DOMContentLoaded', () => {
       btnRemove.type = 'button';
       btnRemove.onclick = () => {
         checked.checked = false;
+        syncCheckedClass(checked); // карточка возвращается в обычный размер
         updateSelectedList();
       };
 
@@ -651,29 +681,32 @@ document.addEventListener('DOMContentLoaded', () => {
         content = data.map(({ title, text }) => {
           return `${title}\n${text}\n`.trim();
         }).join('\n\n');
-        downloadFile(content, 'selected-methods.txt', 'text/plain');
+        downloadFile(content, 'selected-methods.txt', 'text/plain;charset=utf-8', true);
         break;
 
       case 'csv':
+        // Разделитель ";" — так русский Excel корректно раскладывает по колонкам
         const csvRows = [['Приём', 'Описание']];
         data.forEach(({ title, text }) => {
           const cleanTitle = title.replace(/"/g, '""');
           const cleanText = text.replace(/"/g, '""').replace(/\n/g, ' ');
           csvRows.push([`"${cleanTitle}"`, `"${cleanText}"`]);
         });
-        content = csvRows.map(row => row.join(',')).join('\n');
-        downloadFile(content, 'selected-methods.csv', 'text/csv');
+        content = csvRows.map(row => row.join(';')).join('\r\n');
+        downloadFile(content, 'selected-methods.csv', 'text/csv;charset=utf-8', true);
         break;
 
       case 'json':
         content = JSON.stringify(data, null, 2);
-        downloadFile(content, 'selected-methods.json', 'application/json');
+        downloadFile(content, 'selected-methods.json', 'application/json;charset=utf-8', false);
         break;
     }
   }
 
-  function downloadFile(content, filename, mimeType) {
-    const blob = new Blob([content], { type: mimeType });
+  function downloadFile(content, filename, mimeType, addBom) {
+    // BOM (\uFEFF) нужен для Excel: без него кириллица превращается в кракозябры
+    const payload = addBom ? '\uFEFF' + content : content;
+    const blob = new Blob([payload], { type: mimeType });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -693,3 +726,4 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
