@@ -920,7 +920,9 @@
        ============================================================ */
     @media print {
       body { background: #fff; }
-      .hero, .stage-bar, .instruction-box, #constructor, .result-actions, .selected-actions, .footer, .toasts, .to-top, .result-progress { display: none !important; }
+      .hero, .stage-bar, .instruction-box, #constructor, .result-actions, .selected-actions, .footer, .toasts, .to-top, .result-progress,
+      #result-lead, #clear-btn, .confetti { display: none !important; }
+      .reveal { opacity: 1 !important; transform: none !important; }
       #result-area { margin: 0; padding: 0; border: 0; box-shadow: none; }
       #selected-list li { break-inside: avoid; animation: none; }
       #selected-list li.missing { display: none; }
