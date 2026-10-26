@@ -225,6 +225,8 @@
       justify-content: center;
       min-width: 0;
       overflow-x: auto;
+      overflow-y: hidden;
+      overscroll-behavior-x: contain;
       scrollbar-width: none;
       padding: 4px 2px;
     }
@@ -896,7 +898,12 @@
       .progress-ring { display: none; }
     }
 
-    @media (hover: none) {
+    /* на широких экранах все кружки помещаются — прокрутка не нужна, подсказки видны */
+    @media (min-width: 1025px) {
+      .stage-dots { overflow: visible; }
+    }
+    /* где полоска прокручивается, подсказки обрезались бы — показываем только на широких экранах */
+    @media (hover: none), (max-width: 1024px) {
       .stage-dot .tip { display: none; }
     }
     @media (hover: hover) {
@@ -1523,30 +1530,89 @@ const FALLBACK_STAGES = [
     return new Date(ts).toLocaleString('ru-RU', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
   }
 
+  // Ссылка для загрузки через <script> (JSONP) — работает и при открытии сайта как файла,
+  // и на любом хостинге, потому что не упирается в ограничения CORS
+  function sheetJsonpUrl(url, callback) {
+    const id = (url.match(/\/d\/([a-zA-Z0-9-_]+)/) || [])[1];
+    if (!id || url.includes('/d/e/')) return null;   // опубликованные ссылки так не читаются
+    const gid = (url.match(/[#&?]gid=(\d+)/) || [])[1];
+    const sheet = gid ? `gid=${gid}` : `sheet=${encodeURIComponent(SHEET_NAME)}`;
+    return `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?headers=1&${sheet}`
+      + `&tqx=${encodeURIComponent(`out:json;responseHandler:${callback}`)}&_=${Date.now()}`;
+  }
+
+  function loadViaScript(url) {
+    return new Promise((resolve, reject) => {
+      const callback = `__sheetCallback${Date.now()}`;
+      const src = sheetJsonpUrl(url, callback);
+      if (!src) { reject(new Error('Ссылка не подходит для загрузки через скрипт')); return; }
+      const script = document.createElement('script');
+      const cleanup = () => { delete window[callback]; script.remove(); clearTimeout(timer); };
+      const timer = setTimeout(() => { cleanup(); reject(new Error('Google не ответил за 15 секунд')); }, 15000);
+      window[callback] = response => {
+        cleanup();
+        if (!response || response.status === 'error') {
+          const reason = response?.errors?.[0]?.detailed_message || response?.errors?.[0]?.message || 'ошибка таблицы';
+          reject(new Error(reason));
+          return;
+        }
+        const table = response.table || { cols: [], rows: [] };
+        const cellText = c => {
+          if (!c || c.v === null || c.v === undefined) return '';
+          if (typeof c.v === 'number') return Number.isInteger(c.v) ? String(c.v) : (c.f || String(c.v));
+          return String(c.v);
+        };
+        const head = table.cols.map(col => col.label || '');
+        const rows = table.rows.map(r => (r.c || []).map(cellText));
+        resolve(head.some(Boolean) ? [head, ...rows] : rows);
+      };
+      script.onerror = () => { cleanup(); reject(new Error('Таблица закрыта или ссылка неверна: проверьте доступ «Все, у кого есть ссылка — Читатель»')); };
+      script.src = src;
+      document.head.append(script);
+    });
+  }
+
+  async function loadViaFetch(url) {
+    const csvUrl = sheetCsvUrl(url);
+    if (!csvUrl) throw new Error('Не удалось распознать ссылку на таблицу');
+    const sep = csvUrl.includes('?') ? '&' : '?';
+    const res = await fetch(`${csvUrl}${sep}_=${Date.now()}`, { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await res.text();
+    if (/^\s*<!doctype html|<html/i.test(text)) throw new Error('Таблица закрыта: откройте доступ по ссылке');
+    return parseCSV(text);
+  }
+
   async function loadFromSheet() {
-    const url = sheetCsvUrl(SHEET_URL);
-    if (!url) {
+    if (!SHEET_URL || !sheetCsvUrl(SHEET_URL)) {
       if (SHEET_URL) console.warn('Не удалось распознать ссылку на таблицу:', SHEET_URL);
       setDataStatus('', 'Тексты: встроенная версия (таблица не подключена)');
       return;
     }
-    try {
-      const sep = url.includes('?') ? '&' : '?';
-      const res = await fetch(`${url}${sep}_=${Date.now()}`, { cache: 'no-store' });
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      const text = await res.text();
-      if (/^\s*<!doctype html|<html/i.test(text)) throw new Error('Таблица закрыта: откройте доступ по ссылке');
-      const fresh = rowsToStages(parseCSV(text));
+    let fresh = null;
+    const errors = [];
+    for (const loader of [loadViaScript, loadViaFetch]) {
+      try {
+        fresh = rowsToStages(await loader(SHEET_URL));
+        break;
+      } catch (error) {
+        errors.push(error);
+        console.warn(`Google Таблица (${loader.name}):`, error);
+      }
+    }
+
+    if (fresh) {
       store.set(STORE_CACHE, { stages: fresh, time: Date.now() });
       setDataStatus('live', `Тексты из Google Таблицы · обновлено ${timeLabel(Date.now())}`);
       if (JSON.stringify(fresh) !== JSON.stringify(stages)) render(fresh);
-    } catch (error) {
-      console.error('Google Таблица:', error);
-      const cache = store.get(STORE_CACHE, null);
-      setDataStatus('error', cache
-        ? `Таблица недоступна — показана сохранённая версия от ${timeLabel(cache.time)}`
-        : 'Таблица недоступна — показаны встроенные тексты');
+      return;
     }
+
+    const reason = errors[0]?.message || 'неизвестная ошибка';
+    const cache = store.get(STORE_CACHE, null);
+    setDataStatus('error', (cache
+      ? `Таблица недоступна — показана сохранённая версия от ${timeLabel(cache.time)}`
+      : 'Таблица недоступна — показаны встроенные тексты') + ` (${reason})`);
   }
 
   /* =====================================================================
@@ -1581,7 +1647,10 @@ const FALLBACK_STAGES = [
       carousels.set(stage.num, api);
       const title = activeTitles.get(stage.num);
       if (title) api.goToTitle(title, false);
+      else api.relayout();   // карусель уже на странице — теперь размеры известны
     }
+    // ещё раз после отрисовки кадра (на случай догружающихся шрифтов и стилей)
+    requestAnimationFrame(() => carousels.forEach(api => api.relayout()));
 
     renderStageDots();
     updateProgress();
@@ -1697,6 +1766,7 @@ const FALLBACK_STAGES = [
     let index = 0;
 
     function layout(animate = true) {
+      if (!carousel.isConnected || !carousel.clientWidth) return 0;
       if (!animate) track.style.transition = 'none';
       const card = cards[index];
       const shift = card.offsetLeft + card.offsetWidth / 2 - carousel.clientWidth / 2;
@@ -1786,6 +1856,15 @@ const FALLBACK_STAGES = [
 
     go(0, false);
     sync();
+
+    // если ширина карусели изменилась (шрифты, полоса прокрутки, поворот экрана) — центрируем заново
+    if ('ResizeObserver' in window) {
+      let lastWidth = 0;
+      new ResizeObserver(entries => {
+        const width = Math.round(entries[0].contentRect.width);
+        if (width && width !== lastWidth) { lastWidth = width; layout(false); }
+      }).observe(carousel);
+    }
 
     return {
       block,
